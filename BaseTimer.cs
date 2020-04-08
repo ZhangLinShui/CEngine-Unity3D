@@ -56,15 +56,15 @@ namespace CEngine
         {
             public const int kFirstBit = 8;
             public const int kFirstCount = 1 << kFirstBit;
-            public const int kOther = 3;
-            public const int kOtherBit = 8;
-            public const int kOtherCount = 1 << kOtherBit;
+            public const int kNWheelCount = 3;
+            public const int kNWheelBit = 8;
+            public const int kOtherCount = 1 << kNWheelBit;
             public const int kFirstMask = kFirstCount - 1;
-            public const int kOtherMask = kOtherCount - 1;
+            public const int kNMask = kOtherCount - 1;
 
             public int _currentTick = 0;
             private LinkedNode[] _firstWheel = new LinkedNode[kFirstCount];
-            private LinkedNode[][] _otherWheel = new LinkedNode[kOther][];
+            private LinkedNode[][] _NWheel = new LinkedNode[kNWheelCount][];
             private ObjectPool<TimerEvent> _teNodePool = new ObjectPool<TimerEvent>();
 
             public TimerWheel()
@@ -73,13 +73,13 @@ namespace CEngine
                 {
                     _firstWheel[i] = new LinkedNode();
                 }
-                for (int i = 0; i < kOther; ++i)
+                for (int i = 0; i < kNWheelCount; ++i)
                 {
-                    _otherWheel[i] = new LinkedNode[kOtherCount];
+                    _NWheel[i] = new LinkedNode[kOtherCount];
 
                     for (int j = 0; j < kOtherCount; ++j)
                     {
-                        _otherWheel[i][j] = new LinkedNode();
+                        _NWheel[i][j] = new LinkedNode();
                     }
                 }
             }
@@ -109,23 +109,23 @@ namespace CEngine
                 else
                 {
                     int n = 1;
-                    var val = GetOtherMax(n);
-                    while (delayTime >= val && n < kOther)
+                    var val = GetNthMax(n);
+                    while (delayTime >= val && n < kNWheelCount)
                     {
-                        val = GetOtherMax(++n);
+                        val = GetNthMax(++n);
                     }
                     AddOther(te, n);
                 }
             }
 
-            public int GetOtherIndex(int t, int n)
+            public int GetNthIndex(int t, int n)
             {
-                return (t >> (kFirstBit + (n - 1) * kOtherBit)) & kOtherMask;
+                return (t >> (kFirstBit + (n - 1) * kNWheelBit)) & kNMask;
             }
 
-            public long GetOtherMax(int n)
+            public long GetNthMax(int n)
             {
-                return 1 << (kFirstBit + n * kOtherBit);
+                return 1 << (kFirstBit + n * kNWheelBit);
             }
 
             public void AddFirst(TimerEvent te)
@@ -135,7 +135,7 @@ namespace CEngine
 
             public void AddOther(TimerEvent te, int n)
             {
-                _otherWheel[n - 1][GetOtherIndex(te.ExpireTime, n)].AddLast(te);
+                _NWheel[n - 1][GetNthIndex(te.ExpireTime, n)].AddLast(te);
             }
 
             private LinkedNode _head = new LinkedNode();
@@ -147,8 +147,8 @@ namespace CEngine
                     int index = 0;
                     do
                     {
-                        index = GetOtherIndex(_currentTick, i + 1);
-                        _head = _otherWheel[i][index];
+                        index = GetNthIndex(_currentTick, i + 1);
+                        _head = _NWheel[i][index];
                         if (_head != _head.Next)
                         {
                             var node = _head.Split();
@@ -160,7 +160,7 @@ namespace CEngine
                             }
                             AddTimer((TimerEvent)node);
                         }
-                    } while (index == 0 && ++i < kOther);
+                    } while (index == 0 && ++i < kNWheelCount);
                 }
                 _head = _firstWheel[_currentTick & kFirstMask];
                 if (_head != _head.Next)
