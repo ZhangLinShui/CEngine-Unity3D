@@ -58,9 +58,9 @@ namespace CEngine
             public const int kFirstCount = 1 << kFirstBit;
             public const int kNWheelCount = 3;
             public const int kNWheelBit = 8;
-            public const int kOtherCount = 1 << kNWheelBit;
+            public const int kNCount = 1 << kNWheelBit;
             public const int kFirstMask = kFirstCount - 1;
-            public const int kNMask = kOtherCount - 1;
+            public const int kNMask = kNCount - 1;
 
             public int _currentTick = 0;
             private LinkedNode[] _firstWheel = new LinkedNode[kFirstCount];
@@ -75,9 +75,9 @@ namespace CEngine
                 }
                 for (int i = 0; i < kNWheelCount; ++i)
                 {
-                    _NWheel[i] = new LinkedNode[kOtherCount];
+                    _NWheel[i] = new LinkedNode[kNCount];
 
-                    for (int j = 0; j < kOtherCount; ++j)
+                    for (int j = 0; j < kNCount; ++j)
                     {
                         _NWheel[i][j] = new LinkedNode();
                     }
@@ -114,7 +114,7 @@ namespace CEngine
                     {
                         val = GetNthMax(++n);
                     }
-                    AddOther(te, n);
+                    AddToNWheel(te, n);
                 }
             }
 
@@ -133,7 +133,7 @@ namespace CEngine
                 _firstWheel[te.ExpireTime & kFirstMask].AddLast(te);
             }
 
-            public void AddOther(TimerEvent te, int n)
+            public void AddToNWheel(TimerEvent te, int n)
             {
                 _NWheel[n - 1][GetNthIndex(te.ExpireTime, n)].AddLast(te);
             }
