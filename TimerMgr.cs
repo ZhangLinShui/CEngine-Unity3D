@@ -4,12 +4,12 @@ using UnityEngine;
 using CEngine;
 using System;
 
-public class TimerMgr : MonoBehaviour
+public class TimerMgr : SceneTemplate<TimerMgr>
 {
     private LogicTimer _logicTimer = new LogicTimer();
     private FrameTimer _frameTimer = new FrameTimer();
 
-    private void Awake()
+    protected override void OnInit()
     {
         _logicTimer.OnAwake();
         _frameTimer.OnAwake(this);
@@ -21,13 +21,13 @@ public class TimerMgr : MonoBehaviour
         _frameTimer.OnUpdate();
     }
 
-    public void SetLogicTimer(int delay, Action cb)
+    public static void SetLogicTimer(int delay, Action cb)
     {
-        _logicTimer.SetTimer(delay, cb);
+        instance._logicTimer.SetTimer(delay, cb);
     }
 
     public void SetFrameTimer(int delay, Action cb)
     {
-        _frameTimer.SetTimer(delay, cb);
+        instance._frameTimer.SetTimer(delay, cb);
     }
 }
