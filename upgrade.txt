@@ -1,0 +1,119 @@
+有两个点可以优化 动画的剔除 初始队列的更新
+
+
+队列优化已ok
+
+动画优化
+
+gc 分配 触发gc 测试 ok
+
+导出功能性能分析
+
+极限渲染瓶颈的数据分析 ok gfx.waitforpreset
+
+构建调试
+
+顶点数量性能分析 pc 上 我的集显 1M 是极限(结合显卡性能 材质复杂度)
+
+光栅化性能测试 ok 是否在屏幕内不影响 顶点数影响(顶点计算和光栅计算)
+
+时间轮算法
+
+导出并不一定是共面的
+
+
+SendTrunk
+
+单帧 哈希 取值 赋值 移除 40ms 耗费 13ms
+
+TileMapPool.GetHaveIds() 1.79ms 调用两次  dict.keys
+
+TileMapPool.RemoveTile() 1.71 contains
+
+
+打的ab貌似没启用图集打包(我打的)
+
+静态批处理游戏中没有启用
+
+snapdragon profiler
+
+打包验证 canvas 滑动重绘
+
+图集打包 read/write 会导致不打入图集
+
+snapdragon profiler 三星继续 gpu 继续
+
+静态批处理测试
+
+时间轮 王国纪元加载分析
+
+热更 ab加载机制
+
+unity famedebugger setpass在canvas
+
+层中序和渲染序的测试
+
+unity gc 配置测试
+
+
+同样的操作 AddComponent 居然比 GetComponent 耗时如此多
+
+王国纪元加载分析:
+
+ab 具备卸载机制 
+
+guiwindow 和 ab 包直接挂钩，assetbundle.load 直接加载和卸载ab，销毁界面对象, gc.collect，淡入淡出canvasGroup控制
+
+cstring spriteAsset IconSpriteAsset
+
+对 string 的使用严格管理
+
+对 gc 的管理确实极为严格
+
+tranc 类
+
+消息机制
+
+哈希使用数字
+
+ab的加载应该遵循使用一致性及按需加载
+
+ui类资源 (ui专用[以plane为单位] ui共用[专用到共用只需修改之前专用一次 预制资源移])
+
+                                (scene ui 共用[专用改一次 共用改可接受的多次 预制资源移]) 手动 热更 xlua代码  动态加载
+
+scene资源 (scene专用[以scene为单位] scene共用[专用到共用只需修改之前专用一次])
+
+至于音效 数据 游戏运行后全部加载
+
+流在于每次更改后打一次包 专用80% 共用20% 20%高成本处理下共用是可以接受的
+
+ui
+  Common
+  xxxPlane1
+  xxxPlane2
+scene
+  Common
+  xxScene1
+  xxScene2
+data
+audio
+font
+
+流式加载开发模式
+
+ui要求
+
+  分层
+
+  具备重复打开条件
+
+  普通界面和弹框界面
+ 
+  主界面长时间不关闭
+
+  主界面 加载界面 底层切换
+
+basePlane
+
+  先解决有无 再解决性能
