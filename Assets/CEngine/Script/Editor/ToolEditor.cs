@@ -5,9 +5,30 @@ using UnityEngine;
 using System.IO;
 using CEngine;
 using System.Text;
+using System.Linq;
 
 public class ToolEditor
 {
+    public static string[] _suffixs = new string[] { ".prefab", ".png" };
+    public static string kSpriteExtension = ".png";
+
+    public static bool IsSuffixAssetBundle(string suf)
+    {
+        foreach (var s in _suffixs)
+        {
+            if (s.Equals(suf))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool IsSpriteExtension(string suf)
+    {
+        return suf == kSpriteExtension;
+    }
+
     [MenuItem("Assets/CreateAssetBundle")]
     public static void CreateAssetBundle()
     {
@@ -18,6 +39,11 @@ public class ToolEditor
             if (AssetBundlePath.kAssetBundle == Path.GetFileName(p))
             {
                 Debug.LogError("directory name error " + AssetBundlePath.kAssetBundle);
+                return;
+            }
+            if (!Directory.Exists(p))
+            {
+                Debug.LogError("not directory " + p);
                 return;
             }
             var isOk = false;
@@ -38,9 +64,27 @@ public class ToolEditor
                 return;
             }
             var directory = Directory.CreateDirectory(Path.GetFullPath(p));
-            if (null != directory.GetDirectories())
+            if (0 != directory.GetDirectories().Length)
             {
                 Debug.LogError(string.Format("direcory {0} is not leaf node", p));
+            }
+            var files = directory.GetFiles();
+            foreach (var file in files)
+            {
+                if (IsSpriteExtension(Path.GetExtension(file.Name)))
+                {
+                    var ti = AssetImporter.GetAtPath(p + '/' + file.Name) as TextureImporter;
+                    if (ti.textureType == TextureImporterType.Sprite)
+                    {
+                        ti.spritePackingTag = sb.ToString() + ".packTag";
+                    }
+                    ti.assetBundleName = sb.ToString();
+                }
+                else if (IsSuffixAssetBundle(Path.GetExtension(file.Name)))
+                {
+                    var ti = AssetImporter.GetAtPath(p + '/' + file.Name);
+                    ti.assetBundleName = sb.ToString();
+                }
             }
 
         }
