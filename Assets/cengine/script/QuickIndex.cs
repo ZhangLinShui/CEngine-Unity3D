@@ -35,8 +35,6 @@ public class QuickIndex : MonoBehaviour
 
     public GameObject GetCObject(string name)
     {
-        GameObject go;
-        _dict.TryGetValue(name, out go);
-        return go;
+        return _dict[name];
     }
 }
