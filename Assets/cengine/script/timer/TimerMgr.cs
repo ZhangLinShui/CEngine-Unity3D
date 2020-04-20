@@ -9,7 +9,7 @@ public class TimerMgr : SceneTemplate<TimerMgr>
     private LogicTimer _logicTimer = new LogicTimer();
     private FrameTimer _frameTimer = new FrameTimer();
 
-    protected override void OnInit()
+    protected override void OnAwake()
     {
         _logicTimer.OnAwake();
         _frameTimer.OnAwake(this);

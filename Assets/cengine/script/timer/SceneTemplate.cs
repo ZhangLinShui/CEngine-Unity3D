@@ -12,16 +12,22 @@ namespace CEngine
         {
             instance = (T)this;
 
-            OnInit();
+            OnAwake();
         }
 
-        protected virtual void OnInit()
+        protected virtual void OnAwake()
         {
         }
 
         private void OnDestroy()
         {
+            OnClear();
+
             instance = null;
+        }
+
+        protected virtual void OnClear()
+        {
         }
     }
 }

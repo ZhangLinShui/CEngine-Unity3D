@@ -13,17 +13,33 @@ public class MgrTemplate<T> where T: MgrTemplate<T>, new()
             if (null == _inst)
             {
                 _inst = new T();
+                _inst.OnAwake();
             }
             return _inst;
         }
     }
 
-    public virtual void OnInit()
+    public void Init()
+    {
+        OnInit();
+    }
+
+    protected virtual void OnAwake()
     {
     }
 
-    public virtual void OnDispose()
+    protected virtual void OnInit()
     {
+    }
+
+    public void Dispose()
+    {
+        OnClear();
+
         _inst = null;
+    }
+
+    protected virtual void OnClear()
+    {
     }
 }

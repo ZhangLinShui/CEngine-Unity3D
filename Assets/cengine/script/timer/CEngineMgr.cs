@@ -5,7 +5,7 @@ using CEngine;
 
 public class CEngineMgr : SceneTemplate<CEngineMgr>
 {
-    protected override void OnInit()
+    protected override void OnAwake()
     {
         gameObject.AddComponent<TimerMgr>();
     }
