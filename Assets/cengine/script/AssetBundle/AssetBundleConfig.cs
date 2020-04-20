@@ -17,11 +17,21 @@ namespace CEngine
 
         public string GetConfig(string path)
         {
+#if UNITY_EDITOR
+            return Application.streamingAssetsPath + AssetBundlePath.kWindows + path;
+#elif UNITY_ANDROID
             if (_dict[path].IsInternal)
             {
-                return _assetBundlePath.GetInternal() + "/" + path;
+                return _assetBundlePath.GetInternal() + AssetBundlePath.kAndroid + path;
             }
-            return _assetBundlePath.GetExternal() + "/" + path;
+            return _assetBundlePath.GetExternal() + AssetBundlePath.kAndroid + path;
+#elif UNITY_IOS
+            if (_dict[path].IsInternal)
+            {
+                return _assetBundlePath.GetInternal() + AssetBundlePath.kIos + path;
+            }
+            return _assetBundlePath.GetExternal() + AssetBundlePath.kIos + path;
+#endif
         }
     }
 }
