@@ -19,6 +19,10 @@ public class QuickIndexEditor : Editor
         if (GUILayout.Button("Execute"))
         {
             _tool.Execute();
+
+            EditorUtility.SetDirty(_tool);
+
+            AssetDatabase.Refresh();
         }
     }
 }

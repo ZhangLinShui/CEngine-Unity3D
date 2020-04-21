@@ -10,6 +10,7 @@ public class Client : SceneTemplate<Client>
         GameObject.DontDestroyOnLoad(gameObject);
 
         gameObject.AddComponent<TimerMgr>();
+        gameObject.AddComponent<MainCanvas>();
 
         AssetBundleMgr.instance.Init();
     }

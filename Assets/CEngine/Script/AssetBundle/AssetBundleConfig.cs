@@ -32,6 +32,7 @@ namespace CEngine
             }
             return _assetBundlePath.GetExternal() + AssetBundlePath.kIos + path;
 #endif
+            return "";
         }
     }
 }

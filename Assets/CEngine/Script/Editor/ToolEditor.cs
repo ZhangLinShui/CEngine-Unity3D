@@ -69,8 +69,10 @@ public class ToolEditor
                 Debug.LogError(string.Format("direcory {0} is not leaf node", p));
             }
             var files = directory.GetFiles();
-            foreach (var file in files)
+            for(int i = 0; i < files.Length; ++i)
             {
+                var file = files[i];
+
                 if (IsSpriteExtension(Path.GetExtension(file.Name)))
                 {
                     var ti = AssetImporter.GetAtPath(p + '/' + file.Name) as TextureImporter;
@@ -86,7 +88,8 @@ public class ToolEditor
                     ti.assetBundleName = sb.ToString();
                 }
             }
-
         }
+        BuildPipeline.BuildAssetBundles(Application.streamingAssetsPath + "/" + AssetBundlePath.kWindows, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows64);
+        AssetDatabase.Refresh();
     }
 }
