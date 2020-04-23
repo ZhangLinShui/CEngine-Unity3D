@@ -9,12 +9,7 @@ namespace CEngine
     {
         protected override void OnAwake()
         {
-            var origin = Resources.Load<GameObject>("MainCanvas");
-            var mc = GameObject.Instantiate(origin);
-
-            mc.AddComponent<UIMgr>();
-
-            GameObject.DontDestroyOnLoad(mc);
+            GameObject.DontDestroyOnLoad(this);
         }
     }
 }

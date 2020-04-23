@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 2092583786}
   - component: {fileID: 2092583787}
   m_Layer: 0
-  m_Name: client
+  m_Name: CEngine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

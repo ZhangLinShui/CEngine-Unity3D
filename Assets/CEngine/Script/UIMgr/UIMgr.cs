@@ -14,9 +14,9 @@ namespace CEngine
 
     public class UIMgr : SceneTemplate<UIMgr>
     {
-        private QuickIndex _quickIndex;
-        private GameObject _planeRoot;
         private List<PlaneData> _windows = new List<PlaneData>();
+
+        public GameObject RootPlane;
 
         public class PlaneData
         {
@@ -28,9 +28,6 @@ namespace CEngine
 
         protected override void OnAwake()
         {
-            _quickIndex = GetComponent<QuickIndex>();
-
-            _planeRoot = _quickIndex.GetCObject("C_PlaneRoot");
         }
 
         public void OpenUI(string path, EWinType winType, object o)
@@ -64,7 +61,7 @@ namespace CEngine
             pd.Params = o;
             pd.bp = AssetBundleMgr.instance.GetAssetBundle(path).LoadAsset<GameObject>(path).GetComponent<BasePlane>();
             pd.bp.AssetBundleKey = path;
-            pd.bp.transform.parent = _planeRoot.transform;
+            pd.bp.transform.parent = RootPlane.transform;
 
             pd.bp.OnOpen();
 
@@ -94,7 +91,7 @@ namespace CEngine
                 var prevPd = _windows[_windows.Count - 1];
                 prevPd.bp = AssetBundleMgr.instance.GetAssetBundle(prevPd.AssetBundlekey).LoadAsset<GameObject>(prevPd.AssetBundlekey).GetComponent<BasePlane>();
                 prevPd.bp.AssetBundleKey = prevPd.AssetBundlekey;
-                prevPd.bp.transform.parent = _planeRoot.transform;
+                prevPd.bp.transform.parent = RootPlane.transform;
                 prevPd.bp.OnOpen();
             }
             GC.Collect();

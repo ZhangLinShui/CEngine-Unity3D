@@ -97,7 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 635807808939222557}
   m_Layer: 5
-  m_Name: C_PlaneRoot
+  m_Name: RootPlane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -231,7 +231,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3578710253933810399}
-  - component: {fileID: 3284025212249272188}
+  - component: {fileID: 9115215027582180937}
+  - component: {fileID: 8990155123755435895}
   m_Layer: 0
   m_Name: MainCanvas
   m_TagString: Untagged
@@ -255,7 +256,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3284025212249272188
+--- !u!114 &9115215027582180937
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -264,10 +265,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 4928183839660109303}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d70f374f8ea651b478183c11f108ba55, type: 3}
+  m_Script: {fileID: 11500000, guid: 13504fc7e6088bb45ba97f096486494b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Key: C_
+  RootPlane: {fileID: 1452045488400686666}
+--- !u!114 &8990155123755435895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4928183839660109303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cb3ed2a70a4cb6448fa9178141215c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7482297719083048007
 GameObject:
   m_ObjectHideFlags: 0

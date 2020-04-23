@@ -9,10 +9,17 @@ public class Client : SceneTemplate<Client>
     {
         GameObject.DontDestroyOnLoad(gameObject);
 
+        LoadMainCanvas();
+
         gameObject.AddComponent<TimerMgr>();
-        gameObject.AddComponent<MainCanvas>();
 
         AssetBundleMgr.instance.Init();
+    }
+
+    private void LoadMainCanvas()
+    {
+        var mc = Resources.Load<GameObject>("MainCanvas");
+        GameObject.Instantiate(mc);
     }
 
     protected override void OnClear()
