@@ -9,6 +9,8 @@ using System.Linq;
 
 public class ToolEditor
 {
+    public static string CacheDirectory = "/Cache";
+
     public static string[] _suffixs = new string[] { ".prefab", ".png" };
     public static string kSpriteExtension = ".png";
 
@@ -27,6 +29,35 @@ public class ToolEditor
     public static bool IsSpriteExtension(string suf)
     {
         return suf == kSpriteExtension;
+    }
+
+    [InitializeOnLoadMethod]
+    public static void OnInitialize()
+    {
+        if (!Directory.Exists(Application.dataPath + CacheDirectory))
+        {
+            Directory.CreateDirectory(Application.dataPath + CacheDirectory);
+        }
+    }
+
+    [MenuItem("AssetBundleTool/打无压缩AB包(快速打包)/Android")]
+    public static void PackUncompressAndroidAB()
+    {
+    }
+
+    [MenuItem("AssetBundleTool/打无压缩AB包(快速打包)/Ios")]
+    public static void PackUncompressIosAB()
+    {
+    }
+
+    [MenuItem("AssetBundleTool/打正式AB包(耗时长)/Android")]
+    public static void PackAndroidAB()
+    {
+    }
+
+    [MenuItem("AssetBundleTool/打正式AB包(耗时长)/Ios")]
+    public static void PackIosAB()
+    {
     }
 
     [MenuItem("Assets/CreateAssetBundle")]
@@ -89,7 +120,7 @@ public class ToolEditor
                 }
             }
         }
-        BuildPipeline.BuildAssetBundles(Application.streamingAssetsPath + "/" + AssetBundlePath.kWindows, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows64);
+        BuildPipeline.BuildAssetBundles(Application.dataPath + CacheDirectory + AssetBundlePath.kWindows, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows64);
         AssetDatabase.Refresh();
     }
 }
