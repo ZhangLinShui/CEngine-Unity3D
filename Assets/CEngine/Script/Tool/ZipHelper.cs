@@ -30,10 +30,9 @@ namespace CEngine
             try
             {
                 string entName = folderToZip.Replace(rootPath, string.Empty) + "/";
-                //Path.Combine(parentFolderName, Path.GetFileName(folderToZip) + "/")
-                ent = new ZipEntry(entName);
-                zipStream.PutNextEntry(ent);
-                zipStream.Flush();
+                //ent = new ZipEntry(entName);
+                //zipStream.PutNextEntry(ent);
+                //zipStream.Flush();
                 files = Directory.GetFiles(folderToZip);
                 foreach (string file in files)
                 {

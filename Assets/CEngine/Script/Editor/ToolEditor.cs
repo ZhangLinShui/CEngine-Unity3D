@@ -11,7 +11,7 @@ namespace CEngine
 {
     public class ToolEditor
     {
-        public static string CacheDirectory = "/Cache";
+        public static string CacheDirectory = "/Cache/";
 
         public static string[] _suffixs = new string[] { ".prefab", ".png" };
         public static string kSpriteExtension = ".png";
@@ -49,6 +49,7 @@ namespace CEngine
             ZipHelper.ZipDirectoryDirect(Application.dataPath + CacheDirectory, Application.dataPath + "/compress.zip");
             EditorUtility.ClearProgressBar();
             TimeLogger.LogYellow("压缩完成");
+            AssetDatabase.Refresh();
         }
 
         [MenuItem("AssetBundleTool/打无压缩AB包(快速打包)/Ios")]
