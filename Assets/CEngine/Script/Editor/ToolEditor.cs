@@ -11,7 +11,7 @@ namespace CEngine
 {
     public class ToolEditor
     {
-        public static string CacheDirectory = "/Cache/";
+        public static string DevCacheDirectory = "/DevCache/";
 
         public static string[] _suffixs = new string[] { ".prefab", ".png" };
         public static string kSpriteExtension = ".png";
@@ -33,26 +33,45 @@ namespace CEngine
             return suf == kSpriteExtension;
         }
 
-        [InitializeOnLoadMethod]
-        public static void OnInitialize()
+        public static void OnLoadCreateDevDirectory(string relativePath)
         {
-            if (!Directory.Exists(Application.dataPath + CacheDirectory))
+            var path = Application.dataPath + relativePath;
+            if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory(Application.dataPath + CacheDirectory);
+                Directory.CreateDirectory(path);
             }
         }
 
-        [MenuItem("AssetBundleTool/打无压缩AB包(快速打包)/Android")]
+        [InitializeOnLoadMethod]
+        public static void OnInitialize()
+        {
+            OnLoadCreateDevDirectory(DevCacheDirectory);
+            OnLoadCreateDevDirectory(DevCacheDirectory + AssetBundlePath.kWindows);
+            OnLoadCreateDevDirectory(DevCacheDirectory + AssetBundlePath.kAndroid);
+            OnLoadCreateDevDirectory(DevCacheDirectory + AssetBundlePath.kIos);
+        }
+
+        private static void DeleteDirectoryChild(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+            Directory.CreateDirectory(path);
+        }
+
+        [MenuItem("AssetBundleTool/拷贝压缩/Android")]
         public static void PackUncompressAndroidAB()
         {
             EditorUtility.DisplayProgressBar("", "", 0);
-            ZipHelper.ZipDirectoryDirect(Application.dataPath + CacheDirectory, Application.dataPath + "/compress.zip");
+            DeleteDirectoryChild(Application.streamingAssetsPath);
+            ZipHelper.ZipDirectoryDirect(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, Application.streamingAssetsPath + AssetBundlePath.kZipRes);
             EditorUtility.ClearProgressBar();
             TimeLogger.LogYellow("压缩完成");
             AssetDatabase.Refresh();
         }
 
-        [MenuItem("AssetBundleTool/打无压缩AB包(快速打包)/Ios")]
+        [MenuItem("AssetBundleTool/拷贝压缩/Ios")]
         public static void PackUncompressIosAB()
         {
         }
@@ -111,7 +130,7 @@ namespace CEngine
                 {
                     var file = files[i];
 
-                    if (IsSpriteExtension(Path.GetExtension(file.Name)))
+                    if (IsSpriteExtension(Path.GetExtension(file.Name))) 
                     {
                         var ti = AssetImporter.GetAtPath(p + '/' + file.Name) as TextureImporter;
                         if (ti.textureType == TextureImporterType.Sprite)
@@ -127,7 +146,9 @@ namespace CEngine
                     }
                 }
             }
-            BuildPipeline.BuildAssetBundles(Application.dataPath + CacheDirectory + AssetBundlePath.kWindows, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows64);
+            BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows64);
+            BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.Android);
+            //BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kIos, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
             AssetDatabase.Refresh();
         }
     }

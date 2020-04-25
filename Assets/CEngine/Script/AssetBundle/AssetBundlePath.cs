@@ -6,9 +6,11 @@ namespace CEngine
 {
     public class AssetBundlePath
     {
-        public const string kWindows = "windows/";
-        public const string kAndroid = "android/";
-        public const string kIos = "ios/";
+        public const string kWindows = "Windows/";
+        public const string kAndroid = "Android/";
+        public const string kIos = "Ios/";
+
+        public const string kZipRes = "/res.zip";
 
         public const string kAssetBundle = "AssetBundle";
 
