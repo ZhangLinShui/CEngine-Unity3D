@@ -1,0 +1,197 @@
+deferred shading 不支持正交相机 不支持透明渲染   延迟->前向->vertex
+
+tier 封装了一些影响性能的渲染项目 activeTier
+
+
+render path 再看一次
+
+srp 入门编写
+
+shader graph 几种基本效果实现
+
+pass 使用前面pass给的数据
+
+
+snapdragon
+
+
+反射 折射 菲涅尔效应 流光 3d轮廓(跨过深度测试) 必须掌握的
+
+
+溶解的核心在于 clip 的动画变化 初始噪声的形成
+
+行军线 海洋
+
+新手引导stencil模板 菲涅尔效应(简单的点积 pow放大) 简单溶解(噪声)smoothstep的扩大效应 2d轮廓a1*a2*a3*a4==0
+
+
+进行中:bloom荧光效果 简单溶解具备动态性 ps噪声生成
+
+
+水效果的模拟
+
+
+高斯模糊和噪声生成算法 法线贴图的生成掌握是必须掌握的
+
+
+roadmap: 3d轮廓(跨过深度测试) 搞定
+
+法线扰动实现 water      ok  (法线贴图的生成)  (油画和毛玻璃效果) (波纹涟漪 ok clamp(x, 0, 1) fixed * (x/y, 1)) 非常震撼的偏移的概念
+
+叠加模式 ok (blend srcAlpha One)
+
+水面波纹的实现 ok(sin)
+
+uv位移实现切割效果
+
+霓虹灯效果实现
+
+平移 旋转 缩放 扭曲 ok
+
+GraphicRaycaster
+
+粒子挂在 ui 层看不到     3D 对象直接挂在 ui 对象  as is 区别  TxtMesh 颜文字
+
+粒子系统学习 
+
+流光 烟花
+
+神器
+
+有两个点可以优化 动画的剔除 初始队列的更新
+
+
+队列优化已ok
+
+动画优化
+
+gc 分配 触发gc 测试 ok
+
+导出功能性能分析
+
+极限渲染瓶颈的数据分析 ok gfx.waitforpreset
+
+构建调试
+
+顶点数量性能分析 pc 上 我的集显 1M 是极限(结合显卡性能 材质复杂度)
+
+光栅化性能测试 ok 是否在屏幕内不影响 顶点数影响(顶点计算和光栅计算)
+
+时间轮算法
+
+导出并不一定是共面的
+
+
+SendTrunk
+
+单帧 哈希 取值 赋值 移除 40ms 耗费 13ms
+
+TileMapPool.GetHaveIds() 1.79ms 调用两次  dict.keys
+
+TileMapPool.RemoveTile() 1.71 contains
+
+
+打的ab貌似没启用图集打包(我打的)
+
+静态批处理游戏中没有启用
+
+snapdragon profiler
+
+打包验证 canvas 滑动重绘
+
+图集打包 read/write 会导致不打入图集
+
+snapdragon profiler 三星继续 gpu 继续
+
+静态批处理测试
+
+时间轮 王国纪元加载分析
+
+热更 ab加载机制
+
+unity famedebugger setpass在canvas
+
+层中序和渲染序的测试
+
+unity gc 配置测试
+
+
+同样的操作 AddComponent 居然比 GetComponent 耗时如此多
+
+王国纪元加载分析:
+
+ab 具备卸载机制 
+
+guiwindow 和 ab 包直接挂钩，assetbundle.load 直接加载和卸载ab，销毁界面对象, gc.collect，淡入淡出canvasGroup控制
+
+cstring spriteAsset IconSpriteAsset
+
+对 string 的使用严格管理
+
+对 gc 的管理确实极为严格
+
+tranc 类
+
+消息机制
+
+哈希使用数字
+
+ab的加载应该遵循使用一致性及按需加载
+
+ui类资源 (ui专用[以plane为单位] ui共用[专用到共用只需修改之前专用一次 预制资源移])
+
+                                (scene ui 共用[专用改一次 共用改可接受的多次 预制资源移]) 手动 热更 xlua代码  动态加载
+
+scene资源 (scene专用[以scene为单位] scene共用[专用到共用只需修改之前专用一次])
+
+至于音效 数据 游戏运行后全部加载
+
+流在于每次更改后打一次包 专用80% 共用20% 20%高成本处理下共用是可以接受的
+
+ui
+  Common
+  xxxPlane1
+  xxxPlane2
+scene
+  Common
+  xxScene1
+  xxScene2
+data
+audio
+font
+
+流式加载开发模式
+
+ui要求
+
+  分层
+
+  具备重复打开条件
+
+  普通界面和弹框界面
+ 
+  主界面长时间不关闭
+
+  主界面 加载界面 底层切换
+
+basePlane
+
+  先解决有无 再解决性能
+
+  static 移动问题(只有直接挂在场景有效 加载出来的都无效 现有体系下基本无用武之地)
+
+  gpu instancing(海量渲染是神技 100000颗 动态100*100000 instancing 100 + 100000)
+
+  不透明队列的渲染顺序(应该是由近到远)
+
+  协程的原理
+
+  ab
+
+  资源和代码热更
+
+  脱机下载按键精灵
+
+  gc的详细设置
+
+  类和结构体的区别(本质是引用和值类型 最大的表现是性能 其次是对值的修改)
