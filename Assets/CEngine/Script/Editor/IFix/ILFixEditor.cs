@@ -823,7 +823,7 @@ namespace IFix.Editor
                 {
                     var assembly_path = string.Format("./Library/{0}/{1}.dll", GetScriptAssembliesFolder(), assembly);
                     GenPatch(assembly, assembly_path, "./Assets/Plugins/IFix.Core.dll",
-                        string.Format("{0}.patch.bytes", assembly));
+                        string.Format("./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kWindows + "{0}.patch.bytes", assembly));
                 }
             }
             catch (Exception e)
@@ -840,7 +840,7 @@ namespace IFix.Editor
             EditorUtility.DisplayProgressBar("Generate Patch for Android", "patching...", 0);
             try
             {
-                GenPlatformPatch(Platform.android, "");
+                GenPlatformPatch(Platform.android, "./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kAndroid);
             }
             catch(Exception e)
             {
@@ -855,7 +855,7 @@ namespace IFix.Editor
             EditorUtility.DisplayProgressBar("Generate Patch for IOS", "patching...", 0);
             try
             {
-                GenPlatformPatch(Platform.ios, "");
+                GenPlatformPatch(Platform.ios, "./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kIos);
             }
             catch(Exception e)
             {
