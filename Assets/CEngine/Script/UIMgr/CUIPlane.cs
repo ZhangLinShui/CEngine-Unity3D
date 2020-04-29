@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CUIPlane
+namespace GameLogic
 {
+    public class CUIPlane
+    {
+    }
 }
