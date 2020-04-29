@@ -3,27 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using CEngine;
 
-public class Client : SceneTemplate<Client>
+namespace GameLogic
 {
-    protected override void OnAwake()
+    public class Client : SceneTemplate<Client>
     {
-        GameObject.DontDestroyOnLoad(gameObject);
+        protected override void OnAwake()
+        {
+            GameObject.DontDestroyOnLoad(gameObject);
 
-        LoadMainCanvas();
+            LoadMainCanvas();
 
-        gameObject.AddComponent<TimerMgr>();
+            gameObject.AddComponent<TimerMgr>();
 
-        AssetBundleMgr.instance.Init();
-    }
+            AssetBundleMgr.instance.Init();
+        }
 
-    private void LoadMainCanvas()
-    {
-        var mc = Resources.Load<GameObject>("MainCanvas");
-        GameObject.Instantiate(mc);
-    }
+        private void LoadMainCanvas()
+        {
+            var mc = Resources.Load<GameObject>("MainCanvas");
+            GameObject.Instantiate(mc);
+        }
 
-    protected override void OnClear()
-    {
-        AssetBundleMgr.instance.Dispose();
+        protected override void OnClear()
+        {
+            AssetBundleMgr.instance.Dispose();
+        }
     }
 }

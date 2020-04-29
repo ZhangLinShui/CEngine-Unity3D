@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using CEngine;
 
-public class UIPlane : CUIPlane
+namespace GameLogic
 {
+    public class UIPlane : CUIPlane
+    {
+    }
 }
