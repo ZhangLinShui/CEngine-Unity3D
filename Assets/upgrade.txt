@@ -1,3 +1,5 @@
+我的游戏的核心准则[高帧率 强美学 简操控 趣玩法]
+
 deferred shading 不支持正交相机 不支持透明渲染   延迟->前向->vertex
 
 tier 封装了一些影响性能的渲染项目 activeTier
@@ -186,7 +188,7 @@ basePlane
 
   协程的原理
 
-  数据常用保存途径(scriptobject monobehavior playerprefs file)s
+  数据常用保存途径(scriptobject monobehavior playerprefs file)
 
   ab
 
@@ -209,3 +211,5 @@ basePlane
 更新机制设计(返回强更包版本和补丁版本 覆盖安装与多补丁的兼容)[强更 非强更 补丁][由于覆盖安装所以变得有些复杂]
 
 拷贝文件夹 当前版本 主版本 补丁版本
+
+需要有文件完整性验证

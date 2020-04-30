@@ -60,7 +60,65 @@ namespace CEngine
             Directory.CreateDirectory(path);
         }
 
-        [MenuItem("AssetBundleTool/拷贝压缩/Android")]
+        [MenuItem("AssetBundleTool/修改版本配置", priority = 1)]
+        public static void OpenPackEditor()
+        {
+            var win = EditorWindow.GetWindow<PackEditorWin>();
+            win.Show();
+        }
+
+        public static void GeneratePackageCfg(string directoryPath)
+        {
+            var packEditorCfg = PackEditorWin.GetCfg();
+
+            var packCfg = new PackageCfg();
+            packCfg.CurVersion = packEditorCfg.CurVersion;
+            packCfg.PatchVersion = packEditorCfg.PatchVersion;
+
+            TraverseDirectory(directoryPath, packCfg);
+
+            //todo:保存到指定目录文件夹
+        }
+
+        public static void TraverseDirectory(string dirPath, PackageCfg pcfg)
+        {
+            var files = Directory.GetFiles(dirPath);
+            foreach (var file in files)
+            {
+                var p = dirPath + Path.DirectorySeparatorChar;
+                pcfg.Files.Add(new FileCfg(CommonTool.CalFileMD5(p), GetRelativePath(p)));
+            }
+            var dirs = Directory.GetDirectories(dirPath);
+            foreach (var dir in dirs)
+            {
+                TraverseDirectory(dir, pcfg);
+            }
+        }
+
+        public static string GetRelativePath(string path)
+        {
+            var sb = new StringBuilder();
+            var ps = path.Split(Path.DirectorySeparatorChar);
+            for(int i = ps.Length - 1; i >= 0; --i)
+            {
+                var p = ps[i];
+                if (p == AssetBundlePath.kAssetBundle)
+                {
+                    break;
+                }
+                if (i == ps.Length - 1)
+                {
+                    sb.Append(p);
+                }
+                else
+                {
+                    sb.Insert(0, p + Path.DirectorySeparatorChar);
+                }
+            }
+            return sb.ToString();
+        }
+
+        [MenuItem("AssetBundleTool/拷贝压缩/Android", priority = 2)]
         public static void PackUncompressAndroidAB()
         {
             EditorUtility.DisplayProgressBar("", "", 0);
@@ -71,17 +129,17 @@ namespace CEngine
             AssetDatabase.Refresh();
         }
 
-        [MenuItem("AssetBundleTool/拷贝压缩/Ios")]
+        [MenuItem("AssetBundleTool/拷贝压缩/Ios", priority = 2)]
         public static void PackUncompressIosAB()
         {
         }
 
-        [MenuItem("AssetBundleTool/打正式AB包(耗时长)/Android")]
+        [MenuItem("AssetBundleTool/打正式AB包(耗时长)/Android", priority = 3)]
         public static void PackAndroidAB()
         {
         }
 
-        [MenuItem("AssetBundleTool/打正式AB包(耗时长)/Ios")]
+        [MenuItem("AssetBundleTool/打正式AB包(耗时长)/Ios", priority = 3)]
         public static void PackIosAB()
         {
         }
