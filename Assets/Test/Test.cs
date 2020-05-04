@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CEngine;
+using System.IO;
 
 public class Test : MonoBehaviour
 {
     public void Start()
     {
-        var d = new PackageCfg();
-        d.Files.Add(new FileCfg("chen", "tao"));
+        var ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + AssetBundlePath.kSlash + "common.unity3d");
+        var res = ab.LoadAsset<GameObject>("test1");
 
-        Debug.LogError(JsonUtility.ToJson(d));
+        GameObject.Instantiate<GameObject>(res);
     }
 }

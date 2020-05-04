@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace CEngine
@@ -18,7 +19,7 @@ namespace CEngine
         public string GetConfig(string path)
         {
 #if UNITY_EDITOR
-            return Application.streamingAssetsPath + AssetBundlePath.kWindows + path;
+            return Application.streamingAssetsPath + AssetBundlePath.kWindows + AssetBundlePath.kSlash + path;
 #elif UNITY_ANDROID
             if (_dict[path].IsInternal)
             {

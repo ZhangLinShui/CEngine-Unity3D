@@ -12,9 +12,12 @@ namespace CEngine
     public class ToolEditor
     {
         public static string DevCacheDirectory = "/DevCache/";
+        public static string DiffPatchDirectory = "/DiffPatch/";
 
         public static string[] _suffixs = new string[] { ".prefab", ".png" };
         public static string kSpriteExtension = ".png";
+
+        public static string[] _compressSuffixs = new string[] { ".unity3d", ".bytes", ".cfg" };
 
         public static bool IsSuffixAssetBundle(string suf)
         {
@@ -49,6 +52,8 @@ namespace CEngine
             OnLoadCreateDevDirectory(DevCacheDirectory + AssetBundlePath.kWindows);
             OnLoadCreateDevDirectory(DevCacheDirectory + AssetBundlePath.kAndroid);
             OnLoadCreateDevDirectory(DevCacheDirectory + AssetBundlePath.kIos);
+
+            OnLoadCreateDevDirectory(AssetBundlePath.kSlash + DiffPatchDirectory);
         }
 
         private static void DeleteDirectoryChild(string path)
@@ -69,40 +74,64 @@ namespace CEngine
 
         public static void GeneratePackageCfg(string directoryPath)
         {
+            var root = Path.GetFileNameWithoutExtension(directoryPath).ToLower();
+
             var packEditorCfg = PackEditorWin.GetCfg();
 
             var packCfg = new PackageCfg();
             packCfg.CurVersion = packEditorCfg.CurVersion;
             packCfg.PatchVersion = packEditorCfg.PatchVersion;
 
-            TraverseDirectory(directoryPath, packCfg);
+            TraverseDirectory(directoryPath, packCfg, root);
 
-            //todo:保存到指定目录文件夹
+            var dir = Directory.CreateDirectory(directoryPath);
+            var filePath = dir.Parent.FullName + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+            using (var sw = File.CreateText(filePath))
+            {
+                sw.Write(EditorJsonUtility.ToJson(packCfg));
+            }
+            var destFile = directoryPath + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
+            if (File.Exists(destFile))
+            {
+                File.Delete(destFile);
+            }
+            File.Copy(filePath, directoryPath + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg);
         }
 
-        public static void TraverseDirectory(string dirPath, PackageCfg pcfg)
+        public static void TraverseDirectory(string dirPath, PackageCfg pcfg, string root)
         {
             var files = Directory.GetFiles(dirPath);
             foreach (var file in files)
             {
-                var p = dirPath + Path.DirectorySeparatorChar;
-                pcfg.Files.Add(new FileCfg(CommonTool.CalFileMD5(p), GetRelativePath(p)));
+                var correctFileName = file.Replace(@"\", @"/").ToLower();
+
+                var ext = Path.GetExtension(correctFileName);
+                var ret = _compressSuffixs.FirstOrDefault(c => c == ext);
+                if (!string.IsNullOrEmpty(ret))
+                {
+                    pcfg.Files.Add(new FileCfg(CommonTool.CalFileMD5(correctFileName), GetRelativePath(correctFileName, root)));
+                }
             }
             var dirs = Directory.GetDirectories(dirPath);
             foreach (var dir in dirs)
             {
-                TraverseDirectory(dir, pcfg);
+                TraverseDirectory(dir, pcfg, root);
             }
         }
 
-        public static string GetRelativePath(string path)
+        public static string GetRelativePath(string path, string root)
         {
             var sb = new StringBuilder();
-            var ps = path.Split(Path.DirectorySeparatorChar);
+            var ps = path.Split(AssetBundlePath.kSlash);
             for(int i = ps.Length - 1; i >= 0; --i)
             {
                 var p = ps[i];
-                if (p == AssetBundlePath.kAssetBundle)
+                if (p == root)
                 {
                     break;
                 }
@@ -112,18 +141,20 @@ namespace CEngine
                 }
                 else
                 {
-                    sb.Insert(0, p + Path.DirectorySeparatorChar);
+                    sb.Insert(0, p + AssetBundlePath.kSlash);
                 }
             }
-            return sb.ToString();
+            return sb.ToString().ToLower();
         }
 
         [MenuItem("AssetBundleTool/拷贝压缩/Android", priority = 2)]
         public static void PackUncompressAndroidAB()
         {
             EditorUtility.DisplayProgressBar("", "", 0);
+            var path = Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid;
+            GeneratePackageCfg(path);
             DeleteDirectoryChild(Application.streamingAssetsPath);
-            ZipHelper.ZipDirectoryDirect(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, Application.streamingAssetsPath + AssetBundlePath.kZipRes);
+            ZipHelper.ZipDirectoryDirect(path, Application.streamingAssetsPath + AssetBundlePath.kSlash + AssetBundlePath.kZipRes);
             EditorUtility.ClearProgressBar();
             TimeLogger.LogYellow("压缩完成");
             AssetDatabase.Refresh();
@@ -134,14 +165,60 @@ namespace CEngine
         {
         }
 
-        [MenuItem("AssetBundleTool/打正式AB包(耗时长)/Android", priority = 3)]
-        public static void PackAndroidAB()
+        public static void Patch(PackageCfg cfg, string platform)
         {
+            var tmpDir = Application.dataPath + "/tempDir";
+            if (Directory.Exists(tmpDir))
+            {
+                Directory.Delete(tmpDir, true);
+            }
+            var patchCfg = new PackageCfg();
+            var parentPath = Application.dataPath + DevCacheDirectory + platform;
+            for (int i = 0; i < cfg.Files.Count; ++i)
+            {
+                var f = cfg.Files[i];
+                var md5 = CommonTool.CalFileMD5(parentPath + AssetBundlePath.kSlash + f.Path);
+                if (md5 != f.MD5 && Path.GetExtension(f.Path) != AssetBundlePath.kPackCfgSuffix)
+                {
+                    patchCfg.Files.Add(new FileCfg(md5, f.Path));
+
+                    var t = tmpDir + AssetBundlePath.kSlash + f.Path;
+                    if (!Directory.Exists(Path.GetDirectoryName(t)))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(t));
+                    }
+                    File.Copy(parentPath + AssetBundlePath.kSlash + f.Path, t);
+                }
+            }
+            if (patchCfg.Files.Count != 0)
+            {
+                using (var sw = File.CreateText(tmpDir + AssetBundlePath.kSlash + AssetBundlePath.kPatchCfg))
+                {
+                    sw.Write(EditorJsonUtility.ToJson(patchCfg));
+                }
+                ZipHelper.ZipDirectoryDirect(tmpDir, Application.dataPath + DiffPatchDirectory + platform + AssetBundlePath.kPatchZipRes);
+                TimeLogger.LogYellow(platform +  "差异包生成成功");
+
+                if (Directory.Exists(tmpDir))
+                {
+                    Directory.Delete(tmpDir, true);
+                }
+            }
         }
 
-        [MenuItem("AssetBundleTool/打正式AB包(耗时长)/Ios", priority = 3)]
-        public static void PackIosAB()
+        [MenuItem("AssetBundleTool/生成差异包", priority = 3)]
+        public static void GenerateDiffPatch()
         {
+            var p = Application.dataPath + DevCacheDirectory + AssetBundlePath.kPackCfg;
+            var jsonData = File.ReadAllText(p);
+            var cfg = new PackageCfg();
+            EditorJsonUtility.FromJsonOverwrite(jsonData, cfg);
+
+            Patch(cfg, AssetBundlePath.kAndroid);
+            //Patch(cfg, AssetBundlePath.kIos);
+            Patch(cfg, AssetBundlePath.kWindows);
+
+            AssetDatabase.Refresh();
         }
 
         [MenuItem("Assets/CreateAssetBundle")]
@@ -178,6 +255,9 @@ namespace CEngine
                     Debug.LogError(string.Format("directory {0} not Assetbundle child directory", p));
                     return;
                 }
+                var abName = sb.ToString() + AssetBundlePath.kBundleSuffix;
+                abName = abName.ToLower();
+
                 var directory = Directory.CreateDirectory(Path.GetFullPath(p));
                 if (0 != directory.GetDirectories().Length)
                 {
@@ -195,19 +275,26 @@ namespace CEngine
                         {
                             ti.spritePackingTag = sb.ToString() + ".packTag";
                         }
-                        ti.assetBundleName = sb.ToString();
+                        ti.assetBundleName = abName;
                     }
                     else if (IsSuffixAssetBundle(Path.GetExtension(file.Name)))
                     {
                         var ti = AssetImporter.GetAtPath(p + '/' + file.Name);
-                        ti.assetBundleName = sb.ToString();
+                        ti.assetBundleName = abName;
                     }
                 }
+                var abEntry = new AssetBundleBuild();
+                abEntry.assetBundleName = abName;
+                abEntry.assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(abName);
+
+                var abArray = new AssetBundleBuild[1] { abEntry };
+
+                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows, abArray, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.StandaloneWindows64);
+                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, abArray, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.Android);
+                //BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kIos, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
+                AssetDatabase.Refresh();
+                TimeLogger.LogYellow("打包完成");
             }
-            BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows64);
-            BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.Android);
-            //BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kIos, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
-            AssetDatabase.Refresh();
         }
     }
 }

@@ -823,7 +823,7 @@ namespace IFix.Editor
                 {
                     var assembly_path = string.Format("./Library/{0}/{1}.dll", GetScriptAssembliesFolder(), assembly);
                     GenPatch(assembly, assembly_path, "./Assets/Plugins/IFix.Core.dll",
-                        string.Format("./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kWindows + "{0}.patch.bytes", assembly));
+                        string.Format("./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kWindows + Path.DirectorySeparatorChar + "{0}.patch.bytes", assembly));
                 }
             }
             catch (Exception e)
