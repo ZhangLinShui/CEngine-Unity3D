@@ -12,10 +12,10 @@ namespace CEngine
         {
             instance = (T)this;
 
-            OnAwake();
+            OnInit();
         }
 
-        protected virtual void OnAwake()
+        protected virtual void OnInit()
         {
         }
 

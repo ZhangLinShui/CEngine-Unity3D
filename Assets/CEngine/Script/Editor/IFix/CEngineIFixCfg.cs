@@ -14,7 +14,7 @@ using System.Linq;
 //1、配置类必须打[Configure]标签
 //2、必须放Editor目录
 [Configure]
-public class HelloworldCfg
+public class IFixCfg
 {
     [IFix]
     static IEnumerable<Type> hotfix

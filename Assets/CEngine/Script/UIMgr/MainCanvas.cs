@@ -6,7 +6,7 @@ namespace CEngine
 {
     public class MainCanvas : SceneTemplate<MainCanvas>
     {
-        protected override void OnAwake()
+        protected override void OnInit()
         {
             GameObject.DontDestroyOnLoad(this);
         }

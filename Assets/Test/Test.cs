@@ -6,13 +6,46 @@ using UnityEngine.Rendering;
 using CEngine;
 using System.IO;
 
-public class Test : MonoBehaviour
-{
-    public void Start()
-    {
-        var ab = AssetBundle.LoadFromFile(Application.streamingAssetsPath + AssetBundlePath.kSlash + "common.unity3d");
-        var res = ab.LoadAsset<GameObject>("test1");
 
-        GameObject.Instantiate<GameObject>(res);
+namespace GameLogic
+{
+    public class IEnu : IEnumerator
+    {
+        private float t = Time.realtimeSinceStartup;
+
+        public object Current
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool MoveNext()
+        {
+            if (Time.realtimeSinceStartup - t < 3f)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class Test : MonoBehaviour
+    {
+        private void Start()
+        {
+            var t = new IEnu();
+            while (t.MoveNext())
+            {
+                ;
+            }
+            Debug.LogError("ok");
+        }
     }
 }

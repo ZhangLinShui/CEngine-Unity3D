@@ -7,13 +7,14 @@ namespace GameLogic
 {
     public class Client : SceneTemplate<Client>
     {
-        protected override void OnAwake()
+        protected override void OnInit()
         {
             GameObject.DontDestroyOnLoad(gameObject);
 
             LoadMainCanvas();
 
             gameObject.AddComponent<TimerMgr>();
+            gameObject.AddComponent<UpdateMgr>();
 
             AssetBundleMgr.instance.Init();
         }

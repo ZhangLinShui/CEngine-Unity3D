@@ -17,6 +17,7 @@ namespace CEngine
     {
         public int CurVersion = 0;
         public int PatchVersion = 0;
+        public int ForceUpdateVersion = 0;
 
         public List<FileCfg> Files = new List<FileCfg>();
     }

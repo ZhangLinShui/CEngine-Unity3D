@@ -17,8 +17,6 @@ namespace CEngine
         public static string[] _suffixs = new string[] { ".prefab", ".png" };
         public static string kSpriteExtension = ".png";
 
-        public static string[] _compressSuffixs = new string[] { ".unity3d", ".bytes", ".cfg" };
-
         public static bool IsSuffixAssetBundle(string suf)
         {
             foreach (var s in _suffixs)
@@ -81,6 +79,7 @@ namespace CEngine
             var packCfg = new PackageCfg();
             packCfg.CurVersion = packEditorCfg.CurVersion;
             packCfg.PatchVersion = packEditorCfg.PatchVersion;
+            packCfg.ForceUpdateVersion = packEditorCfg.ForceUpdateVersion;
 
             TraverseDirectory(directoryPath, packCfg, root);
 
@@ -111,7 +110,7 @@ namespace CEngine
                 var correctFileName = file.Replace(@"\", @"/").ToLower();
 
                 var ext = Path.GetExtension(correctFileName);
-                var ret = _compressSuffixs.FirstOrDefault(c => c == ext);
+                var ret = AssetBundleMgr.instance.CompressExts.FirstOrDefault(c => c == ext);
                 if (!string.IsNullOrEmpty(ret))
                 {
                     pcfg.Files.Add(new FileCfg(CommonTool.CalFileMD5(correctFileName), GetRelativePath(correctFileName, root)));
@@ -219,6 +218,18 @@ namespace CEngine
             Patch(cfg, AssetBundlePath.kWindows);
 
             AssetDatabase.Refresh();
+        }
+
+        [MenuItem("AssetBundleTool/打开持久化数据目录", priority = 4)]
+        public static void OpenPersistentFolder()
+        {
+            var holderPath = Application.persistentDataPath + AssetBundlePath.kSlash + "holder";
+            if (!File.Exists(holderPath))
+            {
+                var fs = File.Create(holderPath);
+                fs.Dispose();
+            }
+            EditorUtility.RevealInFinder(holderPath);
         }
 
         [MenuItem("Assets/CreateAssetBundle")]

@@ -4,49 +4,48 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-public class PackEditorWinCfg
+namespace CEngine
 {
-    public int CurVersion;
-    public int PatchVersion;
-}
-
-public class PackEditorWin : EditorWindow
-{
-    PackEditorWinCfg _cfg = new PackEditorWinCfg();
-
-    private static string SaveKey = "packEditorWinKey";
-
-    private void OnGUI()
+    public class PackEditorWin : EditorWindow
     {
-        GUILayout.Label("包版本");
-        _cfg.CurVersion = int.Parse(GUILayout.TextField(_cfg.CurVersion.ToString()));
-        GUILayout.Label("补丁版本");
-        _cfg.PatchVersion = int.Parse(GUILayout.TextField(_cfg.PatchVersion.ToString()));
-    }
+        PackageCfg _cfg = new PackageCfg();
 
-    public static PackEditorWinCfg GetCfg()
-    {
-        var cfg = new PackEditorWinCfg();
+        private static string SaveKey = "packEditorWinKey";
 
-        var d = EditorPrefs.GetString(SaveKey, "");
-        if (!string.IsNullOrEmpty(d))
+        private void OnGUI()
         {
-            EditorJsonUtility.FromJsonOverwrite(d, cfg);
+            GUILayout.Label("包版本");
+            _cfg.CurVersion = int.Parse(GUILayout.TextField(_cfg.CurVersion.ToString()));
+            GUILayout.Label("补丁版本[无补丁版本此值必须为0]");
+            _cfg.PatchVersion = int.Parse(GUILayout.TextField(_cfg.PatchVersion.ToString()));
+            GUILayout.Label("强更包版本");
+            _cfg.ForceUpdateVersion = int.Parse(GUILayout.TextField(_cfg.ForceUpdateVersion.ToString()));
         }
-        return cfg;
-    }
 
-    private void OnEnable()
-    {
-        var d = EditorPrefs.GetString(SaveKey, "");
-        if (!string.IsNullOrEmpty(d))
+        public static PackageCfg GetCfg()
         {
-            EditorJsonUtility.FromJsonOverwrite(d, _cfg);
-        }
-    }
+            var cfg = new PackageCfg();
 
-    private void OnDisable()
-    {
-        EditorPrefs.SetString(SaveKey, EditorJsonUtility.ToJson(_cfg));
+            var d = EditorPrefs.GetString(SaveKey, "");
+            if (!string.IsNullOrEmpty(d))
+            {
+                EditorJsonUtility.FromJsonOverwrite(d, cfg);
+            }
+            return cfg;
+        }
+
+        private void OnEnable()
+        {
+            var d = EditorPrefs.GetString(SaveKey, "");
+            if (!string.IsNullOrEmpty(d))
+            {
+                EditorJsonUtility.FromJsonOverwrite(d, _cfg);
+            }
+        }
+
+        private void OnDisable()
+        {
+            EditorPrefs.SetString(SaveKey, EditorJsonUtility.ToJson(_cfg));
+        }
     }
 }

@@ -5,7 +5,7 @@ using CEngine;
 
 public class CanvasMgr : SceneTemplate<CanvasMgr>
 {
-    protected override void OnAwake()
+    protected override void OnInit()
     {
     }
 

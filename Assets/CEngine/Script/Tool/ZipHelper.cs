@@ -29,25 +29,29 @@ namespace CEngine
             Crc32 crc = new Crc32();
             try
             {
-                string entName = folderToZip.Replace(rootPath, string.Empty) + "/";
+                string entName = folderToZip.Replace(rootPath, string.Empty).Replace(@"\", @"/") + @"/";
                 //ent = new ZipEntry(entName);
                 //zipStream.PutNextEntry(ent);
                 //zipStream.Flush();
                 files = Directory.GetFiles(folderToZip);
                 foreach (string file in files)
                 {
-                    fs = File.OpenRead(file);
-                    byte[] buffer = new byte[fs.Length];
-                    fs.Read(buffer, 0, buffer.Length);
-                    ent = new ZipEntry(entName + Path.GetFileName(file));
-                    ent.DateTime = DateTime.Now;
-                    ent.Size = fs.Length;
-                    fs.Close();
-                    crc.Reset();
-                    crc.Update(buffer);
-                    ent.Crc = crc.Value;
-                    zipStream.PutNextEntry(ent);
-                    zipStream.Write(buffer, 0, buffer.Length);
+                    var ext = Path.GetExtension(file);
+                    if (!string.IsNullOrEmpty(AssetBundleMgr.instance.CompressExts.FirstOrDefault(s => s == ext)))
+                    {
+                        fs = File.OpenRead(file);
+                        byte[] buffer = new byte[fs.Length];
+                        fs.Read(buffer, 0, buffer.Length);
+                        ent = new ZipEntry(entName + Path.GetFileName(file));
+                        ent.DateTime = DateTime.Now;
+                        ent.Size = fs.Length;
+                        fs.Close();
+                        crc.Reset();
+                        crc.Update(buffer);
+                        ent.Crc = crc.Value;
+                        zipStream.PutNextEntry(ent);
+                        zipStream.Write(buffer, 0, buffer.Length);
+                    }
                 }
             }
             catch
@@ -256,12 +260,11 @@ namespace CEngine
                 {
                     if (!string.IsNullOrEmpty(ent.Name))
                     {
-                        fileName = Path.Combine(zipedFolder, ent.Name);
-                        fileName = fileName.Replace('/', '\\');//change by Mr.HopeGi  
-                        if (fileName.EndsWith("\\"))
+                        fileName = zipedFolder + AssetBundlePath.kSlash + ent.Name;
+                        var dir = Path.GetDirectoryName(fileName);
+                        if(!Directory.Exists(dir))
                         {
-                            Directory.CreateDirectory(fileName);
-                            continue;
+                            Directory.CreateDirectory(dir);
                         }
                         fs = File.Create(fileName);
                         int size = 2048;
@@ -277,9 +280,10 @@ namespace CEngine
                     }
                 }
             }
-            catch
+            catch(Exception e)
             {
                 result = false;
+                UnityEngine.Debug.LogError(e);
             }
             finally
             {

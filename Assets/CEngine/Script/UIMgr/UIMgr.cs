@@ -26,7 +26,7 @@ namespace CEngine
             public BasePlane bp;
         }
 
-        protected override void OnAwake()
+        protected override void OnInit()
         {
         }
 
