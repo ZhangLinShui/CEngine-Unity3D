@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Reflection;
+using CEngine;
 #if UNITY_2018_3_OR_NEWER
 using UnityEditor.Build.Player;
 #endif
@@ -823,7 +824,7 @@ namespace IFix.Editor
                 {
                     var assembly_path = string.Format("./Library/{0}/{1}.dll", GetScriptAssembliesFolder(), assembly);
                     GenPatch(assembly, assembly_path, "./Assets/Plugins/IFix.Core.dll",
-                        string.Format("./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kWindows + Path.DirectorySeparatorChar + "{0}.patch.bytes", assembly));
+                        string.Format("./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kWindows + AssetBundlePath.kSlash + "{0}.patch.bytes", assembly));
                 }
             }
             catch (Exception e)
@@ -840,7 +841,7 @@ namespace IFix.Editor
             EditorUtility.DisplayProgressBar("Generate Patch for Android", "patching...", 0);
             try
             {
-                GenPlatformPatch(Platform.android, "./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kAndroid);
+                GenPlatformPatch(Platform.android, "./Assets" + CEngine.ToolEditor.DevCacheDirectory + CEngine.AssetBundlePath.kAndroid + AssetBundlePath.kSlash);
             }
             catch(Exception e)
             {

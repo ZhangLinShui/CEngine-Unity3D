@@ -24,7 +24,8 @@ namespace CEngine
         public const string kBundleSuffixNoPoint = "unity3d";
         public const string kPackCfgSuffix = ".cfg";
         public const string kPatchCfg = "patch.cfg";
-
+        public const string kCodePatchFile = "Assembly-CSharp.patch.bytes";
         public const char kSlash = '/';
+        public const string kVersionCfg = "version.asset";
     }
 }

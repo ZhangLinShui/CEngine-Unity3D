@@ -6,6 +6,7 @@ using System.IO;
 using CEngine;
 using System.Text;
 using System.Linq;
+using IFix.Editor;
 
 namespace CEngine
 {
@@ -146,13 +147,35 @@ namespace CEngine
 
             DeleteDirectoryChild(Application.streamingAssetsPath);
 
+            //Resources本地文件
+            var p = "Assets/Resources/" + AssetBundlePath.kVersionCfg;
+            if (File.Exists(p))
+            {
+                File.Delete(p);
+            }
+            var d = ScriptableObject.CreateInstance<VersionCfg>();
+            var editorCfg = PackEditorWin.GetCfg(); 
+            d.CurVersion = editorCfg.CurVersion;
+            AssetDatabase.CreateAsset(d, p);
+            AssetDatabase.SaveAssets();
+
             //android
             var path = Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid;
+            var codeFilePath = path + AssetBundlePath.kSlash + AssetBundlePath.kCodePatchFile;
+            if (File.Exists(codeFilePath))
+            {
+                File.Delete(codeFilePath);
+            }
             GeneratePackageCfg(path);
             ZipHelper.ZipDirectoryDirect(path, Application.streamingAssetsPath + AssetBundlePath.kSlash + AssetBundlePath.kAndroidZipRes);
 
             //windows
             path = Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows;
+            codeFilePath = path + AssetBundlePath.kSlash + AssetBundlePath.kCodePatchFile;
+            if (File.Exists(codeFilePath))
+            {
+                File.Delete(codeFilePath);
+            }
             GeneratePackageCfg(path);
             ZipHelper.ZipDirectoryDirect(path, Application.streamingAssetsPath + AssetBundlePath.kSlash + AssetBundlePath.kWindowsZipRes);
 
@@ -174,12 +197,19 @@ namespace CEngine
                 Directory.Delete(tmpDir, true);
             }
             var patchCfg = new PackageCfg();
+            patchCfg.PatchVersion = PackEditorWin.GetCfg().PatchVersion;
             var parentPath = Application.dataPath + DevCacheDirectory + platform;
+
+            var codePatchFile = parentPath + AssetBundlePath.kSlash + AssetBundlePath.kCodePatchFile;
+            if (File.Exists(codePatchFile))
+            {
+                cfg.Files.Add(new FileCfg(CommonTool.CalFileMD5(codePatchFile), AssetBundlePath.kCodePatchFile));
+            }
             for (int i = 0; i < cfg.Files.Count; ++i)
             {
                 var f = cfg.Files[i];
                 var md5 = CommonTool.CalFileMD5(parentPath + AssetBundlePath.kSlash + f.Path);
-                if (md5 != f.MD5 && Path.GetExtension(f.Path) != AssetBundlePath.kPackCfgSuffix)
+                if (Path.GetExtension(f.Path) == AssetBundleMgr.instance.kPatchFileExt || md5 != f.MD5 && Path.GetExtension(f.Path) != AssetBundlePath.kPackCfgSuffix)
                 {
                     patchCfg.Files.Add(new FileCfg(md5, f.Path));
 
@@ -241,6 +271,14 @@ namespace CEngine
             {
                 Debug.LogError(CommonTool.CalFileMD5(path));
             }
+        }
+
+        [MenuItem("AssetBundleTool/生成ifix补丁[之后还需生成差异包]", priority = 5)]
+        public static void PatchCode()
+        {
+            IFixEditor.Patch();
+            IFixEditor.CompileToAndroid();
+            //IFixEditor.CompileToIOS();
         }
 
         [MenuItem("Assets/CreateAssetBundle")]

@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using IFix.Core;
+using GameLogic;
 
 namespace CEngine
 {
@@ -17,14 +19,14 @@ namespace CEngine
 
         IEnumerator UncompressPackRes(bool isForce)
         {
-            var dataPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipRes;
-            if (isForce && Directory.Exists(dataPath))
+            var zipFolderpath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipFolder;
+            if (isForce && Directory.Exists(zipFolderpath))
             {
-                Directory.Delete(dataPath, true);
+                Directory.Delete(zipFolderpath, true);
             }
-            if (!Directory.Exists(dataPath))
+            var zipFilePath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipRes;
+            if (!Directory.Exists(zipFolderpath))
             {
-                var zipFilePath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipRes;
                 using (var req = UnityWebRequest.Get(AssetBundleMgr.instance.StreamingAssetPath + AssetBundleMgr.instance.ZipRes))
                 {
                     yield return req.SendWebRequest();
@@ -48,6 +50,10 @@ namespace CEngine
 
                 ZipHelper.UnZip(zipFilePath, folderPath);
             }
+            if (File.Exists(zipFilePath))
+            {
+                File.Delete(zipFilePath);
+            }
         }
 
         private void ForceUncompressLocalRes(string zipFilePath, string outputDir)
@@ -59,6 +65,8 @@ namespace CEngine
             Directory.CreateDirectory(outputDir);
 
             ZipHelper.UnZip(zipFilePath, outputDir);
+
+            File.Delete(zipFilePath);
         }
 
         IEnumerator PackCoroutineEnter()
@@ -69,6 +77,15 @@ namespace CEngine
             var mainPackCfgPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipFolder + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
             var jsonData = File.ReadAllText(mainPackCfgPath);
             JsonUtility.FromJsonOverwrite(jsonData, mainPackCfg);
+
+            //覆盖安装检测(之前已经有了缓存文件)
+            var InternalCfg = Resources.Load<VersionCfg>(Path.GetFileNameWithoutExtension(AssetBundlePath.kVersionCfg));
+            if (mainPackCfg.CurVersion != InternalCfg.CurVersion)
+            {
+                yield return StartCoroutine(UncompressPackRes(true));
+                jsonData = File.ReadAllText(mainPackCfgPath);
+                JsonUtility.FromJsonOverwrite(jsonData, mainPackCfg);
+            }
 
             //todo: 向服务器请求版本更新信息
             var updateUri = "file://" + Application.dataPath + "/Web/" + "UpdateJson";
@@ -89,6 +106,7 @@ namespace CEngine
                     //todo:展示强更界面
                     yield break;
                 }
+
                 //处理补丁包
                 var mainRoot = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipFolder + AssetBundlePath.kSlash;
                 if (mainPackCfg.PatchVersion < serverCfg.PatchVersion)
@@ -114,6 +132,7 @@ namespace CEngine
 
                         ForceUncompressLocalRes(patchZipPath, Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kPatchDir);
                     }
+
                     //合并主包与补丁包配置
                     var mainPackDict = new Dictionary<string, FileCfg>();
                     foreach (var mf in mainPackCfg.Files)
@@ -122,24 +141,30 @@ namespace CEngine
                     }
                     var patchRoot = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kPatchDir + AssetBundlePath.kSlash;
                     var patchCfg = new PackageCfg();
-                    var patchJsonData = File.ReadAllText(patchRoot + AssetBundlePath.kPackCfg);
+                    var patchJsonData = File.ReadAllText(patchRoot + AssetBundlePath.kPatchCfg);
                     JsonUtility.FromJsonOverwrite(patchJsonData, patchCfg);
                     foreach (var f in patchCfg.Files)
                     {
-                        if (mainPackDict[f.Path].MD5 == f.MD5)
+                        var isPatchFile = Path.GetExtension(f.Path) == AssetBundleMgr.instance.kPatchFileExt;
+                        if (!isPatchFile)
                         {
-                            Debug.LogError("patchfile same as mainPack file:" + f.Path);
-                            continue;
+                            if (!mainPackDict.ContainsKey(f.Path))
+                            {
+                                Debug.LogError("patch file no mainPack file:" + f.Path);
+                                yield break;
+                            }
+                            if (mainPackDict[f.Path].MD5 == f.MD5)
+                            {
+                                Debug.LogError("patchfile same as mainPack file:" + f.Path);
+                                yield break;
+                            }
                         }
-                        if (mainPackDict.ContainsKey(f.Path) || Path.GetExtension(f.Path) == AssetBundleMgr.instance.kPatchFileExt)
+                        if (File.Exists(mainRoot + f.Path))
                         {
-                            File.Copy(patchRoot + f.Path, mainRoot + f.Path);
-                            mainPackDict[f.Path].MD5 = f.MD5;
+                            File.Delete(mainRoot + f.Path);
                         }
-                        else
-                        {
-                            Debug.LogError("patch file no mainPack file:" + f.Path);
-                        }
+                        File.Copy(patchRoot + f.Path, mainRoot + f.Path);
+                        mainPackDict[f.Path] = f;
                     }
                     mainPackCfg.PatchVersion = patchCfg.PatchVersion;
                     mainPackCfg.Files = mainPackDict.Values.ToList();
@@ -149,7 +174,10 @@ namespace CEngine
                         File.Delete(mainPackCfgPath);
                     }
                     File.WriteAllText(mainPackCfgPath, mergeCfgJsonData);
+
+                    Directory.Delete(patchRoot, true);
                 }
+
                 //进行文件完整性校验
                 var md5 = "";
                 foreach(var f in mainPackCfg.Files)
@@ -170,7 +198,13 @@ namespace CEngine
                         yield break;
                     }
                 }
-                //加载完成 进入场景
+
+                //如果存在代码补丁就加载
+                var codePatchFile = mainRoot + AssetBundlePath.kCodePatchFile;
+                if (File.Exists(codePatchFile))
+                {
+                    PatchManager.Load(new MemoryStream(File.ReadAllBytes(codePatchFile)));
+                }
             }
         }
     }

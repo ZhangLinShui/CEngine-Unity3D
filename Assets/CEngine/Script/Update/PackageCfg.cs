@@ -14,7 +14,7 @@ namespace CEngine
     }
 
     public class PackageCfg
-    {
+    { 
         public int CurVersion = 0;
         public int PatchVersion = 0;
         public int ForceUpdateVersion = 0;

@@ -9,43 +9,12 @@ using System.IO;
 
 namespace GameLogic
 {
-    public class IEnu : IEnumerator
+    public class Test
     {
-        private float t = Time.realtimeSinceStartup;
-
-        public object Current
+        public static void Add(int a, int b)
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool MoveNext()
-        {
-            if (Time.realtimeSinceStartup - t < 3f)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public void Reset()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class Test : MonoBehaviour
-    {
-        private void Start()
-        {
-            var t = new IEnu();
-            while (t.MoveNext())
-            {
-                ;
-            }
-            Debug.LogError("ok");
+            var ret = a * b;
+            Debug.LogError(ret);
         }
     }
 }
