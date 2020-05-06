@@ -9,6 +9,8 @@ namespace GameLogic
     {
         protected override void OnInit()
         {
+            Application.targetFrameRate = SysConfig.TargetFrame;
+
             GameObject.DontDestroyOnLoad(gameObject);
 
             LoadMainCanvas();
