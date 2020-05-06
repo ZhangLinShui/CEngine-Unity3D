@@ -89,6 +89,8 @@ namespace CEngine
                     //todo:展示强更界面
                     yield break;
                 }
+                //处理补丁包
+                var mainRoot = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kZipFolder + AssetBundlePath.kSlash;
                 if (mainPackCfg.PatchVersion < serverCfg.PatchVersion)
                 {
                     if (mainPackCfg.PatchVersion != 0)
@@ -119,7 +121,6 @@ namespace CEngine
                         mainPackDict[mf.Path] = mf;
                     }
                     var patchRoot = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kPatchDir + AssetBundlePath.kSlash;
-                    var mainRoot = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kZipFolder;
                     var patchCfg = new PackageCfg();
                     var patchJsonData = File.ReadAllText(patchRoot + AssetBundlePath.kPackCfg);
                     JsonUtility.FromJsonOverwrite(patchJsonData, patchCfg);
@@ -149,7 +150,23 @@ namespace CEngine
                     }
                     File.WriteAllText(mainPackCfgPath, mergeCfgJsonData);
                 }
-
+                //进行文件完整性校验
+                var md5 = "";
+                foreach(var f in mainPackCfg.Files)
+                {
+                    if (!File.Exists(mainRoot + f.Path))
+                    {
+                        Debug.LogError("mainPack file not exist " + f.Path);
+                        yield break;
+                    }
+                    md5 = CommonTool.CalFileMD5(mainRoot + f.Path);
+                    if (md5 != f.MD5)
+                    {
+                        Debug.LogError(string.Format("mainPack file MD5 check error! cfg md5:{0} real md5:{1}", f.MD5, md5));
+                        yield break;
+                    }
+                }
+                //加载完成 进入场景
             }
         }
     }
