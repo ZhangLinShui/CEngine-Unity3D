@@ -273,7 +273,7 @@ namespace CEngine
                         {
                             size = zipStream.Read(data, 0, data.Length);
                             if (size > 0)
-                                fs.Write(data, 0, data.Length);
+                                fs.Write(data, 0, size);
                             else
                                 break;
                         }

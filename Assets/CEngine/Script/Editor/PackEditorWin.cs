@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,12 +15,12 @@ namespace CEngine
 
         private void OnGUI()
         {
-            GUILayout.Label("包版本");
-            _cfg.CurVersion = int.Parse(GUILayout.TextField(_cfg.CurVersion.ToString()));
-            GUILayout.Label("补丁版本[无补丁版本此值必须为0]");
-            _cfg.PatchVersion = int.Parse(GUILayout.TextField(_cfg.PatchVersion.ToString()));
+            GUILayout.Label("当前包版本[出包时修改]");
+            _cfg.CurVersion = int.Parse(Regex.Replace(GUILayout.TextField(_cfg.CurVersion.ToString()), "[^0-9]", ""));
             GUILayout.Label("强更包版本");
-            _cfg.ForceUpdateVersion = int.Parse(GUILayout.TextField(_cfg.ForceUpdateVersion.ToString()));
+            _cfg.ForceUpdateVersion = int.Parse(Regex.Replace(GUILayout.TextField(_cfg.ForceUpdateVersion.ToString()), "[^0-9]", ""));
+            GUILayout.Label("补丁版本[出包时必须为0][出补丁时才可修改]");
+            _cfg.PatchVersion = int.Parse(Regex.Replace(GUILayout.TextField(_cfg.PatchVersion.ToString()), "[^0-9]", ""));
         }
 
         public static PackageCfg GetCfg()

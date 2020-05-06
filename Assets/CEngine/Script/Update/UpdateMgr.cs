@@ -17,15 +17,15 @@ namespace CEngine
 
         IEnumerator UncompressPackRes(bool isForce)
         {
-            var dataPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kZipFolder;
+            var dataPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipRes;
             if (isForce && Directory.Exists(dataPath))
             {
                 Directory.Delete(dataPath, true);
             }
             if (!Directory.Exists(dataPath))
             {
-                var zipFilePath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kZipRes;
-                using (var req = UnityWebRequest.Get(AssetBundleMgr.instance.StreamingAssetPath + AssetBundlePath.kZipRes))
+                var zipFilePath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipRes;
+                using (var req = UnityWebRequest.Get(AssetBundleMgr.instance.StreamingAssetPath + AssetBundleMgr.instance.ZipRes))
                 {
                     yield return req.SendWebRequest();
                     if (req.isNetworkError || req.isHttpError)
@@ -39,7 +39,7 @@ namespace CEngine
                     }
                     File.WriteAllBytes(zipFilePath, req.downloadHandler.data);
                 }
-                var folderPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kZipFolder;
+                var folderPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipFolder;
                 if (Directory.Exists(folderPath))
                 {
                     Directory.Delete(folderPath, true);
@@ -66,13 +66,13 @@ namespace CEngine
             yield return StartCoroutine(UncompressPackRes(false));
 
             var mainPackCfg = new PackageCfg();
-            var mainPackCfgPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kZipFolder + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
+            var mainPackCfgPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipFolder + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
             var jsonData = File.ReadAllText(mainPackCfgPath);
             JsonUtility.FromJsonOverwrite(jsonData, mainPackCfg);
 
             //todo: 向服务器请求版本更新信息
-            var updateUri = "";
-            var patchUri = "";
+            var updateUri = "file://" + Application.dataPath + "/Web/" + "UpdateJson";
+            var patchUri = "file://" + Application.dataPath + "/DiffPatch/" + AssetBundleMgr.instance.PatchZip;
             using (var updateReq = UnityWebRequest.Get(updateUri))
             {
                 yield return updateReq.SendWebRequest();
@@ -90,7 +90,7 @@ namespace CEngine
                     yield break;
                 }
                 //处理补丁包
-                var mainRoot = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kZipFolder + AssetBundlePath.kSlash;
+                var mainRoot = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipFolder + AssetBundlePath.kSlash;
                 if (mainPackCfg.PatchVersion < serverCfg.PatchVersion)
                 {
                     if (mainPackCfg.PatchVersion != 0)
@@ -105,7 +105,7 @@ namespace CEngine
                             Debug.LogError(updateReq.error);
                             yield break;
                         }
-                        var patchZipPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kPatchZipRes;
+                        var patchZipPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.PatchZip;
                         if (File.Exists(patchZipPath))
                         {
                             File.Delete(patchZipPath);
@@ -158,6 +158,10 @@ namespace CEngine
                     {
                         Debug.LogError("mainPack file not exist " + f.Path);
                         yield break;
+                    }
+                    if (Path.GetExtension(f.Path) == AssetBundlePath.kPackCfgSuffix)
+                    {
+                        continue;
                     }
                     md5 = CommonTool.CalFileMD5(mainRoot + f.Path);
                     if (md5 != f.MD5)

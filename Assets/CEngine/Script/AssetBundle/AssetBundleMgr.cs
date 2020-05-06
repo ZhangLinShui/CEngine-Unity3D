@@ -19,7 +19,7 @@ namespace CEngine
          * macOS player uses Application.dataPath + "/Resources/Data/StreamingAssets",
          * iOS uses Application.dataPath + "/Raw",
          * Android uses files inside a compressed APK JAR file, "jar:file://" + Application.dataPath + "!/assets".*/
-        public string _streamingAssetPath;
+        private string _streamingAssetPath;
         public string StreamingAssetPath
         {
             get
@@ -36,6 +36,87 @@ namespace CEngine
                     }
                 }
                 return _streamingAssetPath;
+            }
+        }
+
+        /// <summary>
+        /// 压缩包路径
+        /// </summary>
+        private string _zipRes;
+        public string ZipRes
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(_zipRes))
+                {
+                    if (Application.platform == RuntimePlatform.Android)
+                    {
+                        _zipRes = AssetBundlePath.kAndroidZipRes;
+                    }
+                    else if (Application.platform == RuntimePlatform.IPhonePlayer)
+                    {
+                        _zipRes = AssetBundlePath.kIosZipRes;
+                    }
+                    else
+                    {
+                        _zipRes = AssetBundlePath.kWindowsZipRes;
+                    }
+                }
+                return _zipRes;
+            }
+        }
+
+        /// <summary>
+        /// 压缩包解压后文件夹路径
+        /// </summary>
+        private string _zipFolder;
+        public string ZipFolder
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_zipFolder))
+                {
+                    if (Application.platform == RuntimePlatform.Android)
+                    {
+                        _zipFolder = AssetBundlePath.kAndroidZipFolder;
+                    }
+                    else if (Application.platform == RuntimePlatform.IPhonePlayer)
+                    {
+                        _zipFolder = AssetBundlePath.kIosZipFolder;
+                    }
+                    else
+                    {
+                        _zipFolder = AssetBundlePath.kWindowsZipFolder;
+                    }
+                }
+                return _zipFolder;
+            }
+        }
+
+        /// <summary>
+        /// 补丁压缩包路径
+        /// </summary>
+        private string _patchZip;
+        public string PatchZip
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_patchZip))
+                {
+                    if (Application.platform == RuntimePlatform.Android)
+                    {
+                        _patchZip = AssetBundlePath.kAndroid + AssetBundlePath.kPatchZipRes;
+                    }
+                    else if (Application.platform == RuntimePlatform.IPhonePlayer)
+                    {
+                        _patchZip = AssetBundlePath.kIos + AssetBundlePath.kPatchZipRes;
+                    }
+                    else
+                    {
+                        _patchZip = AssetBundlePath.kWindows + AssetBundlePath.kPatchZipRes;
+                    }
+                }
+                return _patchZip;
             }
         }
 

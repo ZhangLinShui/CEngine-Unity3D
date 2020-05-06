@@ -83,8 +83,7 @@ namespace CEngine
 
             TraverseDirectory(directoryPath, packCfg, root);
 
-            var dir = Directory.CreateDirectory(directoryPath);
-            var filePath = dir.Parent.FullName + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
+            var filePath = directoryPath + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
 
             if (File.Exists(filePath))
             {
@@ -94,12 +93,6 @@ namespace CEngine
             {
                 sw.Write(EditorJsonUtility.ToJson(packCfg));
             }
-            var destFile = directoryPath + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
-            if (File.Exists(destFile))
-            {
-                File.Delete(destFile);
-            }
-            File.Copy(filePath, directoryPath + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg);
         }
 
         public static void TraverseDirectory(string dirPath, PackageCfg pcfg, string root)
@@ -146,26 +139,35 @@ namespace CEngine
             return sb.ToString().ToLower();
         }
 
-        [MenuItem("AssetBundleTool/拷贝压缩/Android", priority = 2)]
+        [MenuItem("AssetBundleTool/拷贝压缩并生成配置", priority = 2)]
         public static void PackUncompressAndroidAB()
         {
             EditorUtility.DisplayProgressBar("", "", 0);
+
+            DeleteDirectoryChild(Application.streamingAssetsPath);
+
+            //android
             var path = Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid;
             GeneratePackageCfg(path);
-            DeleteDirectoryChild(Application.streamingAssetsPath);
-            ZipHelper.ZipDirectoryDirect(path, Application.streamingAssetsPath + AssetBundlePath.kSlash + AssetBundlePath.kZipRes);
+            ZipHelper.ZipDirectoryDirect(path, Application.streamingAssetsPath + AssetBundlePath.kSlash + AssetBundlePath.kAndroidZipRes);
+
+            //windows
+            path = Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows;
+            GeneratePackageCfg(path);
+            ZipHelper.ZipDirectoryDirect(path, Application.streamingAssetsPath + AssetBundlePath.kSlash + AssetBundlePath.kWindowsZipRes);
+
             EditorUtility.ClearProgressBar();
             TimeLogger.LogYellow("压缩完成");
             AssetDatabase.Refresh();
         }
 
-        [MenuItem("AssetBundleTool/拷贝压缩/Ios", priority = 2)]
-        public static void PackUncompressIosAB()
+        public static void Patch(string platform)
         {
-        }
+            var p = Application.dataPath + DevCacheDirectory + platform + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
+            var jsonData = File.ReadAllText(p);
+            var cfg = new PackageCfg();
+            EditorJsonUtility.FromJsonOverwrite(jsonData, cfg);
 
-        public static void Patch(PackageCfg cfg, string platform)
-        {
             var tmpDir = Application.dataPath + "/tempDir";
             if (Directory.Exists(tmpDir))
             {
@@ -196,26 +198,25 @@ namespace CEngine
                     sw.Write(EditorJsonUtility.ToJson(patchCfg));
                 }
                 ZipHelper.ZipDirectoryDirect(tmpDir, Application.dataPath + DiffPatchDirectory + platform + AssetBundlePath.kPatchZipRes);
-                TimeLogger.LogYellow(platform +  "差异包生成成功");
+                TimeLogger.LogYellow(platform + "差异包生成成功");
 
                 if (Directory.Exists(tmpDir))
                 {
                     Directory.Delete(tmpDir, true);
                 }
             }
+            else
+            {
+                Debug.LogError("no different patch");
+            }
         }
 
         [MenuItem("AssetBundleTool/生成差异包", priority = 3)]
         public static void GenerateDiffPatch()
         {
-            var p = Application.dataPath + DevCacheDirectory + AssetBundlePath.kPackCfg;
-            var jsonData = File.ReadAllText(p);
-            var cfg = new PackageCfg();
-            EditorJsonUtility.FromJsonOverwrite(jsonData, cfg);
-
-            Patch(cfg, AssetBundlePath.kAndroid);
+            Patch(AssetBundlePath.kAndroid);
             //Patch(cfg, AssetBundlePath.kIos);
-            Patch(cfg, AssetBundlePath.kWindows);
+            Patch(AssetBundlePath.kWindows);
 
             AssetDatabase.Refresh();
         }
@@ -230,6 +231,16 @@ namespace CEngine
                 fs.Dispose();
             }
             EditorUtility.RevealInFinder(holderPath);
+        }
+
+        [MenuItem("AssetBundleTool/测试md5", priority = 5)]
+        public static void CheckMD5()
+        {
+            var path = EditorUtility.OpenFilePanel("", Application.dataPath + DevCacheDirectory, AssetBundlePath.kBundleSuffixNoPoint);
+            if (!string.IsNullOrEmpty(path))
+            {
+                Debug.LogError(CommonTool.CalFileMD5(path));
+            }
         }
 
         [MenuItem("Assets/CreateAssetBundle")]

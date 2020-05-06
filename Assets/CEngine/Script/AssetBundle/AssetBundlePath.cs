@@ -10,13 +10,18 @@ namespace CEngine
         public const string kAndroid = "Android";
         public const string kIos = "Ios";
 
-        public const string kZipFolder = "res";
-        public const string kZipRes = "res.zip";
+        public const string kAndroidZipFolder = "androidRes";
+        public const string kAndroidZipRes = "androidRes.zip";
+        public const string kIosZipFolder = "iosRes";
+        public const string kIosZipRes = "iosRes.zip";
+        public const string kWindowsZipFolder = "windowsRes";
+        public const string kWindowsZipRes = "windowsRes.zip";
         public const string kPatchZipRes = "patch.zip";
         public const string kPatchDir = "patch";
         public const string kAssetBundle = "AssetBundle";
         public const string kPackCfg = "pack.cfg";
         public const string kBundleSuffix = ".unity3d";
+        public const string kBundleSuffixNoPoint = "unity3d";
         public const string kPackCfgSuffix = ".cfg";
         public const string kPatchCfg = "patch.cfg";
 
