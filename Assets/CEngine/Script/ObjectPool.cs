@@ -8,11 +8,14 @@ using System;
 /// </summary>
 namespace CEngine
 {
+    /// <summary>
+    /// C#托管对象类[继承自object 但不继承Object]
+    /// </summary>
     public class ObjectPool<T> where T : new()
     {
         private List<T> _objects = new List<T>();
 
-        public T Get()
+        public virtual T Get()
         {
             if (0 != _objects.Count)
             {
@@ -23,7 +26,7 @@ namespace CEngine
             return new T();
         }
 
-        public void Release(T obj)
+        public virtual void Release(T obj)
         {
             _objects.Add(obj);
         }

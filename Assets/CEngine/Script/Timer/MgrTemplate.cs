@@ -13,7 +13,6 @@ public class MgrTemplate<T> where T: MgrTemplate<T>, new()
             if (null == _inst)
             {
                 _inst = new T();
-                _inst.OnAwake();
             }
             return _inst;
         }
@@ -22,10 +21,6 @@ public class MgrTemplate<T> where T: MgrTemplate<T>, new()
     public void Init()
     {
         OnInit();
-    }
-
-    protected virtual void OnAwake()
-    {
     }
 
     protected virtual void OnInit()

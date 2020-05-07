@@ -13,5 +13,10 @@ namespace CEngine
         {
             Debug.Log(string.Format("<color={0}>[{1}] {2}</color>", sYellow, DateTime.Now.ToLongTimeString(), str));
         }
+
+        public static void LogError(string str)
+        {
+            Debug.LogError(string.Format("[{0}] {1}", DateTime.Now.ToLongTimeString(), str));
+        }
     }
 }

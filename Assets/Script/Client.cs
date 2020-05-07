@@ -13,12 +13,15 @@ namespace GameLogic
 
             GameObject.DontDestroyOnLoad(gameObject);
 
+            AssetBundleMgr.instance.Init();
+            UIGameLogcConfigMgr.instance.Init();
+            
             LoadMainCanvas();
+            UIMgr.instance.InjectChunkMgr(UIGameLogcConfigMgr.instance);
+            UIMgr.instance.OpenUI(UIPlane.LoginPlane);
 
             gameObject.AddComponent<TimerMgr>();
             gameObject.AddComponent<UpdateMgr>();
-
-            AssetBundleMgr.instance.Init();
         }
 
         private void LoadMainCanvas()
@@ -30,6 +33,7 @@ namespace GameLogic
         protected override void OnClear()
         {
             AssetBundleMgr.instance.Dispose();
+            UIGameLogcConfigMgr.instance.Dispose();
         }
     }
 }

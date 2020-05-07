@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using CEngine;
 
-public class BasePlane : MonoBehaviour
+namespace CEngine
 {
-    public string AssetBundleKey;
-
-    public virtual void OnOpen()
+    public class BasePlane : MonoBehaviour
     {
-    }
+        [HideInInspector]
+        public string UIPath;
 
-    public virtual void OnClear()
-    {
-    }
+        public virtual void OnOpen()
+        {
+        }
 
-    public void CloseMySelf()
-    {
-        UIMgr.instance.CloseUI(AssetBundleKey);
+        public virtual void OnClear()
+        {
+        }
+
+        public void CloseMySelf()
+        {
+            UIMgr.instance.ClosePeekUI(UIPath);
+        }
     }
 }

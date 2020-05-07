@@ -9,12 +9,18 @@ using System.IO;
 
 namespace GameLogic
 {
-    public class Test
+    public class Test : MonoBehaviour
     {
-        public static void Add(int a, int b)
+        private void Start()
         {
-            var ret = a * b;
-            Debug.LogError(ret);
+            var stack = new Stack<int>();
+            stack.Push(1);
+            stack.Push(2);
+
+            foreach (var d in stack)
+            {
+                TimeLogger.LogError(d.ToString());
+            }
         }
     }
 }
