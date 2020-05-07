@@ -10,12 +10,15 @@ namespace CEngine
         [HideInInspector]
         public string UIPath;
 
+        protected MsgModel msg = new MsgModel();
+
         public virtual void OnOpen()
         {
         }
 
         public virtual void OnClear()
         {
+            msg.Clear();
         }
 
         public void CloseMySelf()

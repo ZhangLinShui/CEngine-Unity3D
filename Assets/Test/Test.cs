@@ -22,5 +22,13 @@ namespace GameLogic
                 TimeLogger.LogError(d.ToString());
             }
         }
+
+        public void Generic<T>(T a)
+        {
+        }
+
+        private void Show(int b)
+        {
+        }
     }
 }

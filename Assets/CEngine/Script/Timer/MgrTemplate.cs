@@ -2,39 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MgrTemplate<T> where T: MgrTemplate<T>, new()
+namespace CEngine
 {
-    private static T _inst;
-
-    public static T instance
+    public class MgrTemplate<T> where T : MgrTemplate<T>, new()
     {
-        get
+        private static T _inst;
+
+        protected MsgModel msg = new MsgModel();
+
+        public static T instance
         {
-            if (null == _inst)
+            get
             {
-                _inst = new T();
+                if (null == _inst)
+                {
+                    _inst = new T();
+                }
+                return _inst;
             }
-            return _inst;
+        }
+
+        public void Init()
+        {
+            OnInit();
+        }
+
+        protected virtual void OnInit()
+        {
+        }
+
+        public void Dispose()
+        {
+            OnClear();
+
+            msg.Clear();
+
+            _inst = null;
+        }
+
+        protected virtual void OnClear()
+        {
         }
     }
 
-    public void Init()
-    {
-        OnInit();
-    }
-
-    protected virtual void OnInit()
-    {
-    }
-
-    public void Dispose()
-    {
-        OnClear();
-
-        _inst = null;
-    }
-
-    protected virtual void OnClear()
-    {
-    }
 }
