@@ -15,7 +15,7 @@ namespace GameLogic
 
             AssetBundleMgr.instance.Init();
             UIGameLogcConfigMgr.instance.Init();
-            EventListener.instance.Init();
+            EventMgr.instance.Init();
             
             LoadMainCanvas();
             UIMgr.instance.InjectChunkMgr(UIGameLogcConfigMgr.instance);
@@ -35,7 +35,7 @@ namespace GameLogic
         {
             AssetBundleMgr.instance.Dispose();
             UIGameLogcConfigMgr.instance.Dispose();
-            EventListener.instance.Dispose();
+            EventMgr.instance.Dispose();
         }
     }
 }

@@ -8,8 +8,6 @@ namespace CEngine
     {
         public static T instance;
 
-        protected MsgModel msg = new MsgModel();
-
         private void Awake()
         {
             instance = (T)this;
@@ -24,8 +22,6 @@ namespace CEngine
         private void OnDestroy()
         {
             OnClear();
-
-            msg.Clear();
 
             instance = null;
         }

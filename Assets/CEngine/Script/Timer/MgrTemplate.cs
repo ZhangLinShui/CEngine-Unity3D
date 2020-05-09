@@ -8,8 +8,6 @@ namespace CEngine
     {
         private static T _inst;
 
-        protected MsgModel msg = new MsgModel();
-
         public static T instance
         {
             get
@@ -34,8 +32,6 @@ namespace CEngine
         public void Dispose()
         {
             OnClear();
-
-            msg.Clear();
 
             _inst = null;
         }

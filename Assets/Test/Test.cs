@@ -11,24 +11,19 @@ namespace GameLogic
 {
     public class Test : MonoBehaviour
     {
+        public Transform Target;
+
         private void Start()
         {
-            var stack = new Stack<int>();
-            stack.Push(1);
-            stack.Push(2);
-
-            foreach (var d in stack)
-            {
-                TimeLogger.LogError(d.ToString());
-            }
         }
 
-        public void Generic<T>(T a)
+        private void Update()
         {
-        }
+            var dir = Target.position - transform.position;
 
-        private void Show(int b)
-        {
+            Quaternion q = new Quaternion();
+            q.SetLookRotation(dir, new Vector3(1, 1, 0));
+            transform.rotation = q;
         }
     }
 }

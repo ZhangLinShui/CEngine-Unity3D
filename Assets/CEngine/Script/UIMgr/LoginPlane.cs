@@ -7,7 +7,7 @@ namespace GameLogic
 {
     public class LoginPlane : BasePlane
     {
-        public override void OnOpen()
+        public override void OnOpen(object[] args)
         {
         }
     }

@@ -69,8 +69,9 @@ namespace CEngine
         public string UIPath;
         public BasePlane UIBasePlane;
         public UIConfigChunk ConfigChunk;
+        public object[] Args;
 
-        public UIStackChunk(string ui, BasePlane bp, UIConfigChunk cc) { UIPath = ui; UIBasePlane = bp; ConfigChunk = cc; }
+        public UIStackChunk(string ui, BasePlane bp, UIConfigChunk cc, params object[] args) { UIPath = ui; UIBasePlane = bp; ConfigChunk = cc; Args = args; }
     }
 
     /// <summary>
@@ -147,7 +148,7 @@ namespace CEngine
         /// <summary>
         /// 打开ui
         /// </summary>
-        public void OpenUI(string ui, UIConfigChunk chunk)
+        public void OpenUI(string ui, UIConfigChunk chunk, params object[] args)
         {
             if (chunk.UIResType == ResType.ResourceLoad && chunk.UICacheType == CacheType.Cache)
             {
@@ -213,14 +214,14 @@ namespace CEngine
                 rt.localScale = Vector3.one;
                 
                 bp.UIPath = ui;
-                bp.OnOpen();
+                bp.OnOpen(args);
             }
             else
             {
                 bp = cacheStackChunk.UIBasePlane;
                 cacheStackChunk.UIBasePlane = null;
             }
-            var uiStackChunk = new UIStackChunk(ui, bp, chunk);
+            var uiStackChunk = new UIStackChunk(ui, bp, chunk, args);
             _stack.Push(uiStackChunk);
         }
 
