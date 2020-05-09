@@ -53,6 +53,25 @@ namespace CEngine
             OnLoadCreateDevDirectory(DevCacheDirectory + AssetBundlePath.kIos);
 
             OnLoadCreateDevDirectory(AssetBundlePath.kSlash + DiffPatchDirectory);
+
+            EditorApplication.playModeStateChanged += (sta) =>
+            {
+                if (sta == PlayModeStateChange.EnteredPlayMode || sta == PlayModeStateChange.ExitingPlayMode)
+                {
+                    var ec = GameObject.FindGameObjectWithTag("EditorOnly");
+                    if (null != ec)
+                    {
+                        ec.SetActive(sta == PlayModeStateChange.ExitingPlayMode);
+                    }
+                }
+            };
+        }
+
+        [MenuItem("GameObject/CEngine/MainCanvas", false, 10)]
+        public static void CreateEditorCanvas()
+        {
+            var res = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/CEngine/Editor/EditorCanvas.prefab");
+            GameObject.Instantiate(res);
         }
 
         private static void DeleteDirectoryChild(string path)

@@ -1,7 +1,11 @@
+托管和事件
+
+bugly appflyer aihelp
+
 Transition(转场类设计)
 
 脱机挂测试
 
-bugly appflyer aihelp
-
 gms和苹果推送机制
+
+服务器 java http 服务器搭建
