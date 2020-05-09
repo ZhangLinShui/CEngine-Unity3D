@@ -1,5 +1,3 @@
-托管和事件
-
 bugly appflyer aihelp
 
 Transition(转场类设计)
@@ -9,3 +7,5 @@ Transition(转场类设计)
 gms和苹果推送机制
 
 服务器 java http 服务器搭建
+
+破解类入门[此优先级可以排最后 不做强制处理]
