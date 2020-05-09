@@ -71,12 +71,16 @@ namespace CEngine
 
         IEnumerator PackCoroutineEnter()
         {
+            EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0f);
+
             yield return StartCoroutine(UncompressPackRes(false));
 
             var mainPackCfg = new PackageCfg();
             var mainPackCfgPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipFolder + AssetBundlePath.kSlash + AssetBundlePath.kPackCfg;
             var jsonData = File.ReadAllText(mainPackCfgPath);
             JsonUtility.FromJsonOverwrite(jsonData, mainPackCfg);
+
+            EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.05f);
 
             //覆盖安装检测(之前已经有了缓存文件)
             var InternalCfg = Resources.Load<VersionCfg>(Path.GetFileNameWithoutExtension(AssetBundlePath.kVersionCfg));
@@ -87,17 +91,23 @@ namespace CEngine
                 JsonUtility.FromJsonOverwrite(jsonData, mainPackCfg);
             }
 
+            EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.2f);
+
             //todo: 向服务器请求版本更新信息
             var updateUri = "file://" + Application.dataPath + "/Web/" + "UpdateJson";
             var patchUri = "file://" + Application.dataPath + "/DiffPatch/" + AssetBundleMgr.instance.PatchZip;
             using (var updateReq = UnityWebRequest.Get(updateUri))
             {
+                EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.3f);
+
                 yield return updateReq.SendWebRequest();
                 if (updateReq.isHttpError || updateReq.isNetworkError)
                 {
                     Debug.LogError(updateReq.error);
                     yield break;
                 }
+                EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.4f);
+
                 var serverCfg = new PackageCfg();
                 jsonData = System.Text.Encoding.UTF8.GetString(updateReq.downloadHandler.data);
                 JsonUtility.FromJsonOverwrite(jsonData, serverCfg);
@@ -106,6 +116,7 @@ namespace CEngine
                     //todo:展示强更界面
                     yield break;
                 }
+                EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.5f);
 
                 //处理补丁包
                 var mainRoot = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.ZipFolder + AssetBundlePath.kSlash;
@@ -117,12 +128,16 @@ namespace CEngine
                     }
                     using (var patchReq = UnityWebRequest.Get(patchUri))
                     {
+                        EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.6f);
+
                         yield return patchReq.SendWebRequest();
                         if (patchReq.isNetworkError || patchReq.isHttpError)
                         {
                             Debug.LogError(updateReq.error);
                             yield break;
                         }
+                        EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.7f);
+
                         var patchZipPath = Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundleMgr.instance.PatchZip;
                         if (File.Exists(patchZipPath))
                         {
@@ -132,6 +147,8 @@ namespace CEngine
 
                         ForceUncompressLocalRes(patchZipPath, Application.persistentDataPath + AssetBundlePath.kSlash + AssetBundlePath.kPatchDir);
                     }
+
+                    EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.8f);
 
                     //合并主包与补丁包配置
                     var mainPackDict = new Dictionary<string, FileCfg>();
@@ -177,6 +194,7 @@ namespace CEngine
 
                     Directory.Delete(patchRoot, true);
                 }
+                EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.9f);
 
                 //进行文件完整性校验
                 var md5 = "";
@@ -205,6 +223,7 @@ namespace CEngine
                 {
                     PatchManager.Load(new MemoryStream(File.ReadAllBytes(codePatchFile)));
                 }
+                EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 1f);
             }
         }
     }
