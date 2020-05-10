@@ -1,11 +1,17 @@
-bugly appflyer aihelp
+我们工程中使用的压缩方式
 
-Transition(ת�������)
+日志系统
 
-�ѻ��Ҳ���
+urp hdrp 区别与常用工作流区分
 
-gms��ƻ�����ͻ���
+Transition(转场类设计)
 
-������ java http �������
+脱机挂测试
 
-�ƽ�������[�����ȼ���������� ����ǿ�ƴ���]
+bugly appflyer aihelp[业务逻辑开发完成后最后进行]
+
+gms和苹果推送机制
+
+服务器 java http 服务器搭建
+
+破解类入门[此优先级可以排最后 不做强制处理]
