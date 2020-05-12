@@ -11,19 +11,19 @@ namespace GameLogic
 {
     public class Test : MonoBehaviour
     {
-        public Transform Target;
-
         private void Start()
         {
+            UnityEngine.Debug.LogError("xx2");
         }
 
+        int count = 0;
         private void Update()
         {
-            var dir = Target.position - transform.position;
-
-            Quaternion q = new Quaternion();
-            q.SetLookRotation(dir, new Vector3(1, 1, 0));
-            transform.rotation = q;
+            count++;
+            if (count == 10)
+            {
+                Debug.LogError("good");
+            }
         }
     }
 }
