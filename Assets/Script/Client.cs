@@ -56,6 +56,7 @@ namespace GameLogic
 
             GameObject.DontDestroyOnLoad(gameObject);
 
+            GameController.instance.Init();
             AssetBundleMgr.instance.Init();
             UIGameLogcConfigMgr.instance.Init();
             EventMgr.instance.Init();
@@ -81,6 +82,7 @@ namespace GameLogic
 
         protected override void OnClear()
         {
+            GameController.instance.Dispose();
             AssetBundleMgr.instance.Dispose();
             UIGameLogcConfigMgr.instance.Dispose();
             EventMgr.instance.Dispose();

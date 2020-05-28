@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using CEngine;
 using System.IO;
-
+using CEngine;
 
 namespace GameLogic
 {
@@ -13,17 +13,12 @@ namespace GameLogic
     {
         private void Start()
         {
-            UnityEngine.Debug.LogError("xx2");
+            var mirror = AssetBundleMgr.instance.GetAssetBundle("ui/common.unity3d").LoadAsset<GameObject>("GoodMan");
+            GameObject.Instantiate(mirror);
         }
 
-        int count = 0;
         private void Update()
         {
-            count++;
-            if (count == 10)
-            {
-                Debug.LogError("good");
-            }
         }
     }
 }

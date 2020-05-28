@@ -7,9 +7,13 @@ using UnityEngine;
 using UnityEngine.Networking;
 using IFix.Core;
 using GameLogic;
+using UnityEngine.SceneManagement;
 
 namespace CEngine
 {
+    /// <summary>
+    /// 更新管理器
+    /// </summary>
     public class UpdateMgr : SceneTemplate<UpdateMgr>
     {
         protected override void OnInit()
@@ -225,6 +229,7 @@ namespace CEngine
                 }
                 EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 1f);
             }
+            EventMgr.instance.SendEvent(EventDefine.UpdateFinish);
         }
     }
 }

@@ -128,14 +128,14 @@ namespace CEngine
             AssRef assRef;
             if (!_dict.TryGetValue(path, out assRef))
             {
-                _dict[path] = new AssRef();
+                var ar = new AssRef();
+                _dict[path] = ar;
+                assRef = ar;
             }
             assRef.Ref++;
             if (null == assRef.AB)
             {
-                //var abPath = _config.GetConfig(path);
-                //todo: 修复
-                assRef.AB = AssetBundle.LoadFromFile("");
+                assRef.AB = AssetBundle.LoadFromFile(Application.persistentDataPath + AssetBundlePath.kSlash + ZipFolder + AssetBundlePath.kSlash + path);
             }
             return assRef.AB;
         }
