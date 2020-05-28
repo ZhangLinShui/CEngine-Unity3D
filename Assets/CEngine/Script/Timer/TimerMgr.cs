@@ -34,7 +34,7 @@ public class TimerMgr : SceneTemplate<TimerMgr>
         instance._logicTimer.SetTimer(delay, cb);
     }
 
-    public void SetFrameTimer(int delay, Action cb)
+    public static  void SetFrameTimer(int delay, Action cb)
     {
         instance._frameTimer.SetTimer(delay, cb);
     }
