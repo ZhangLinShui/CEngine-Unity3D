@@ -1,5 +1,7 @@
 # CEngine 是一个轻量级Unity开发框架
 
+作者 QQ:1107689123 邮箱:1107689123@qq.com
+
 CEngine 是一个轻量级Unity开发框架，可满足常用的开发需求，主要包含的功能有:
 
 * AssetBundle打包加载全套逻辑(整合SharpZipLib完成压缩解压)
