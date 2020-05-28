@@ -1,27 +1,21 @@
-图片压缩方式 
+���ּ��غͽ�ѹ[̽����io����cpu����]
 
-光栅化后不在视口的剔除规则
+�����android������
 
-线性空间和 Gamma空间
+�����༭������
 
-打包到android上运行
+urp hdrp ����
 
-场景编辑几个点
+ҵ���߼���д����
 
-我们工程使用的压缩方式
+Transition(ת�������)
 
-urp hdrp 测试
+�ѻ��Ҳ���
 
-业务逻辑编写测试
+������ java http �������
 
-Transition(转场类设计)
+bugly facebooksdk appflyer aihelp[���߽���]
 
-脱机挂测试
+gms��ƻ�����ͻ���
 
-服务器 java http 服务器搭建
-
-bugly facebooksdk appflyer aihelp[上线接入]
-
-gms和苹果推送机制
-
-破解类入门[此优先级可以排最后 不做强制处理]
+�ƽ�������[�����ȼ���������� ����ǿ�ƴ���]

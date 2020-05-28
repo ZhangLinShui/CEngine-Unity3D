@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿//********************************************************************
+//	CopyRight   CEngine
+//	Purpose:	CEngine引擎内部事件定义
+//	Created:	2020-04-28
+//	Author:		ChenTao
+//  QQ:         1107689123
+//  Mail:       1107689123@qq.com
+//********************************************************************
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

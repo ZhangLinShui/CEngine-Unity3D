@@ -1,4 +1,12 @@
-﻿using ICSharpCode.SharpZipLib.Checksum;
+﻿//********************************************************************
+//	CopyRight   CEngine
+//	Purpose:	压缩帮助类
+//	Created:	2020-04-28
+//	Author:		ChenTao
+//  QQ:         1107689123
+//  Mail:       1107689123@qq.com
+//********************************************************************
+using ICSharpCode.SharpZipLib.Checksum;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
