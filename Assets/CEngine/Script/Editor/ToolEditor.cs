@@ -363,11 +363,19 @@ namespace CEngine
                             ti.spritePackingTag = sb.ToString() + ".packTag";
                         }
                         ti.assetBundleName = abName;
+                        if (ti.assetBundleName != abName)
+                        {
+                            ti.SaveAndReimport();
+                        }
                     }
                     else if (IsSuffixAssetBundle(Path.GetExtension(file.Name)))
                     {
                         var ti = AssetImporter.GetAtPath(p + '/' + file.Name);
                         ti.assetBundleName = abName;
+                        if (ti.assetBundleName != abName)
+                        {
+                            ti.SaveAndReimport();
+                        }
                     }
                 }
                 var abEntry = new AssetBundleBuild();
@@ -376,8 +384,8 @@ namespace CEngine
 
                 var abArray = new AssetBundleBuild[1] { abEntry };
 
-                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows, abArray, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
-                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, abArray, BuildAssetBundleOptions.None, BuildTarget.Android);
+                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows, abArray, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows64);
+                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, abArray, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.Android);
                 //BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kIos, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
                 AssetDatabase.Refresh();
                 TimeLogger.LogYellow("打包完成");
