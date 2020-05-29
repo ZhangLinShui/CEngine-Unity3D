@@ -376,8 +376,8 @@ namespace CEngine
 
                 var abArray = new AssetBundleBuild[1] { abEntry };
 
-                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows, abArray, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.StandaloneWindows64);
-                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, abArray, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.Android);
+                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kWindows, abArray, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
+                BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kAndroid, abArray, BuildAssetBundleOptions.None, BuildTarget.Android);
                 //BuildPipeline.BuildAssetBundles(Application.dataPath + DevCacheDirectory + AssetBundlePath.kIos, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
                 AssetDatabase.Refresh();
                 TimeLogger.LogYellow("打包完成");

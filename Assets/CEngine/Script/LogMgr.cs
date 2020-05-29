@@ -62,7 +62,7 @@ namespace CEngine
         protected override void OnClear()
         {
             if (null != _logStreamWriter)
-            {
+            {                
                 _logStreamWriter.Dispose();
             }
         }
@@ -102,6 +102,7 @@ namespace CEngine
                 OnInitLogFile();
 
                 _logStreamWriter.Write(_logQueue.Dequeue());
+                _logStreamWriter.Flush();
             }
         }
 

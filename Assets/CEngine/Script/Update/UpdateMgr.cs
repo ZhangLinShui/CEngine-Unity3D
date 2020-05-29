@@ -106,7 +106,7 @@ namespace CEngine
             EventMgr.instance.SendEvent<float>(EventDefine.UpdateProgress, 0.2f);
 
             //todo: 向服务器请求版本更新信息
-            var updateUri = "file://" + Application.dataPath + "/Web/" + "UpdateJson";
+            var updateUri = "192.168.1.79/" + "UpdateJson";
             var patchUri = "file://" + Application.dataPath + "/DiffPatch/" + AssetBundleMgr.instance.PatchZip;
             using (var updateReq = UnityWebRequest.Get(updateUri))
             {
