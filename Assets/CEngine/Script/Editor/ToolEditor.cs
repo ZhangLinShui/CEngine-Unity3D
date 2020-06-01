@@ -300,7 +300,7 @@ namespace CEngine
             }
         }
 
-        [MenuItem("AssetBundleTool/生成ifix补丁[之后还需生成差异包]", priority = 5)]
+        [MenuItem("AssetBundleTool/生成ifix补丁[之后还需生成差异包]", priority = 6)]
         public static void PatchCode()
         {
             IFixEditor.Patch();
